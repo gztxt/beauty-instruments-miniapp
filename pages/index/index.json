@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "banner-swiper": "/components/banner-swiper/banner-swiper",
+    "section-header": "/components/section-header/section-header"
+  }
+}

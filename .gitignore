@@ -1,0 +1,17 @@
+# WeChat developer tools
+.DS_Store
+*.log
+node_modules/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+Thumbs.db
+ehthumbs.db
+
+# Project specific
+*.zip

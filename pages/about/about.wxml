@@ -1,0 +1,117 @@
+<view class="about-page">
+
+  <!-- ===== 顶部 Banner（非轮播，展示品牌核心） ===== -->
+  <view class="page-banner">
+    <view class="banner-bg-deco">
+      <view class="banner-circle circle-1"></view>
+      <view class="banner-circle circle-2"></view>
+      <view class="banner-circle circle-3"></view>
+    </view>
+    <view class="banner-content-wrap">
+      <view class="banner-tag">ABOUT</view>
+      <view class="banner-title">关于我们</view>
+      <view class="banner-sub">采薇品牌 · 专注美容仪器研发制造</view>
+      <view class="banner-gold-line"></view>
+    </view>
+  </view>
+
+  <!-- ===== 使命 · 愿景 · 价值观 ===== -->
+  <view class="container section">
+    <view class="section-title">使命 · 愿景 · 价值观</view>
+    <view class="section-divider"></view>
+
+    <view class="mvv-grid">
+      <view class="mvv-item card">
+        <view class="mvv-icon-wrap">
+          <view class="mvv-icon mvv-icon-mission"></view>
+        </view>
+        <view class="mvv-label">使 命</view>
+        <view class="mvv-title">让科技真正服务于美</view>
+        <view class="mvv-desc">将光电技术、生物传感与皮肤科学深度融合，降低专业美容仪器的使用门槛，让每个人都能在家安全、有效地管理肌肤健康。</view>
+      </view>
+      <view class="mvv-item card">
+        <view class="mvv-icon-wrap">
+          <view class="mvv-icon mvv-icon-vision"></view>
+        </view>
+        <view class="mvv-label">愿 景</view>
+        <view class="mvv-title">全球家庭美容仪器领先品牌</view>
+        <view class="mvv-desc">持续投入底层技术研发，构建从核心器件到整机方案的完整能力，成为消费者信赖、行业认可的家用美容仪器提供商。</view>
+      </view>
+      <view class="mvv-item card">
+        <view class="mvv-icon-wrap">
+          <view class="mvv-icon mvv-icon-values"></view>
+        </view>
+        <view class="mvv-label">价值观</view>
+        <view class="mvv-title">真实 · 专业 · 长期主义</view>
+        <view class="mvv-desc">• <text class="mvv-highlight">真实</text>：不夸大功效，用数据和体验说话<br/>• <text class="mvv-highlight">专业</text>：每一款产品都经过严谨的研发与测试<br/>• <text class="mvv-highlight">长期主义</text>：做耐用的产品，做值得长期信任的品牌</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ===== 公司简介 ===== -->
+  <view class="container section">
+    <view class="section-title">公司简介</view>
+    <view class="section-divider"></view>
+    <view class="company-desc card">
+      <view class="desc-text">{{companyInfo.name}}成立于2015年，总部位于广州番禺，是一家集美容仪器研发、生产、销售为一体的科技型企业。公司拥有5000平方米的现代化生产基地，配备万级无尘车间和自动化装配线。</view>
+      <view class="desc-text">采薇品牌拥有30+产品系列、100+专利技术，产品覆盖皮肤检测、射频紧致、光子嫩肤、超声波清洁、微电流护理等全品类，通过CE、FCC、RoHS等国际认证。</view>
+      <view class="desc-text">目前产品远销欧美、东南亚、中东等50多个国家和地区，服务全球超过500家企业客户，为全球消费者提供专业的美容仪器解决方案。</view>
+    </view>
+  </view>
+
+  <!-- ===== 发展历程 ===== -->
+  <view class="container section">
+    <view class="section-title">发展历程</view>
+    <view class="section-divider"></view>
+    <view class="timeline">
+      <view class="timeline-item" wx:for="{{milestones}}" wx:key="index">
+        <view class="timeline-dot {{index === 0 ? 'first' : ''}}"></view>
+        <view class="timeline-wrap {{index % 2 === 0 ? 'tl-left' : 'tl-right'}}">
+          <view class="timeline-content card">
+            <view class="tl-year">{{item.year}}</view>
+            <view class="tl-desc">{{item.desc}}</view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ===== 资质认证 ===== -->
+  <view class="container section">
+    <view class="section-title">资质认证</view>
+    <view class="section-divider"></view>
+    <view class="certs-grid">
+      <view class="cert-item card" wx:for="{{certifications}}" wx:key="index">
+        <view class="cert-icon-bg">
+          <text class="cert-icon-text">{{item.short}}</text>
+        </view>
+        <view class="cert-name">{{item.name}}</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ===== 联系我们 ===== -->
+  <view class="container section contact-section">
+    <view class="section-title">联系我们</view>
+    <view class="section-divider"></view>
+    <view class="contact-card card">
+      <view class="contact-row">
+        <text class="contact-label">地址</text>
+        <text class="contact-value">{{companyInfo.address}}</text>
+      </view>
+      <view class="contact-row">
+        <text class="contact-label">电话</text>
+        <text class="contact-value">{{companyInfo.phone}}</text>
+      </view>
+      <view class="contact-row">
+        <text class="contact-label">邮箱</text>
+        <text class="contact-value">{{companyInfo.email}}</text>
+      </view>
+      <view class="contact-row">
+        <text class="contact-label">官网</text>
+        <text class="contact-value">{{companyInfo.website}}</text>
+      </view>
+    </view>
+  </view>
+
+</view>

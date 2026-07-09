@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>美容仪器 - 企业展示</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --primary: #3D8B7A;
+  --primary-light: #5DAF9A;
+  --primary-dark: #2D6B5E;
+  --accent: #E8A87C;
+  --accent-light: #F0C4A0;
+  --bg: #F7F8F5;
+  --card-bg: #ffffff;
+  --text: #2C3E2D;
+  --text-light: #7A8A7A;
+  --radius: 12px;
+}
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  max-width: 420px;
+  margin: 0 auto;
+  min-height: 100vh;
+  padding-bottom: 60px;
+}
+
+/* 轮播 */
+.swiper-wrap {
+  position: sticky;
+  top: 0;
+  z-index: 99;
+  overflow: hidden;
+  background: #EEF1EC;
+  margin: 0 16px;
+  border-radius: 16px;
+}
+
+.swiper-wrap .swiper-dots {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.banner {
+  width: 100%;
+  height: 180px;
+  display: flex;
+  transition: transform 0.5s ease;
+}
+.banner-slide {
+  min-width: 100%;
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+.banner-slide:nth-child(1) { background: linear-gradient(135deg, #3D8B7A, #5DAF9A); }
+.banner-slide:nth-child(2) { background: linear-gradient(135deg, #2D6B5E, #4A9F8A); }
+.banner-slide:nth-child(3) { background: linear-gradient(135deg, #4A9F8A, #6BBFAA); }
+.banner-slide:nth-child(4) { background: linear-gradient(135deg, #3D8B7A, #7ACFBA); }
+@keyframes breathe {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.12); }
+}
+.banner-slide { animation: breathe 4s ease-in-out infinite; }
+.swiper-dots {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+}
+.swiper-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: rgba(255,255,255,0.4);
+  transition: all 0.3s;
+}
+.swiper-dot.active { width: 20px; border-radius: 4px; background: var(--accent); }
+
+/* 通用 */
+.container { padding: 0 16px; }
+.section { margin-top: 16px; }
+.section-header { text-align: center; margin-bottom: 16px; }
+.section-title {
+  font-size: 18px; font-weight: 700; color: var(--primary);
+  margin-bottom: 6px;
+  letter-spacing: 0.5px;
+}
+.section-divider {
+  width: 36px; height: 3px;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  border-radius: 2px; margin: 0 auto 16px;
+}
+.card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+/* 公司简介 */
+.company-intro { text-align: center; padding: 24px 16px; }
+.intro-icon { font-size: 36px; color: var(--accent); margin-bottom: 8px; }
+.intro-title { font-size: 18px; font-weight: 700; color: var(--primary); margin-bottom: 12px; }
+.intro-desc { font-size: 14px; color: var(--text-light); line-height: 1.8; }
+
+/* 核心优势 */
+.advantages-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.advantage-item { text-align: center; padding: 20px 12px; cursor: pointer; transition: transform 0.25s ease; }
+.advantage-item:active { transform: scale(0.96); }
+.adv-icon { font-size: 32px; margin-bottom: 8px; display: inline-block; transition: filter 0.25s ease, transform 0.25s ease; }
+.advantage-item:hover .adv-icon { filter: brightness(1.2); transform: scale(1.1); }
+.advantage-item:active .adv-icon { filter: brightness(0.8); transform: scale(0.9); }
+.adv-title { font-size: 14px; font-weight: 600; color: var(--primary); margin-bottom: 6px; }
+.adv-desc { font-size: 12px; color: var(--text-light); line-height: 1.6; }
+
+/* 主打产品 */
+.featured-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.featured-item { overflow: hidden; cursor: pointer; }
+.featured-item:active { transform: scale(0.96); }
+.featured-img {
+  width: 100%; height: 100px;
+  background: linear-gradient(135deg, #E8F0EC, #D0E8DD);
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 8px; margin-bottom: 8px;
+  font-size: 13px; color: var(--primary-light);
+  transition: filter 0.25s ease;
+}
+.featured-item:hover .featured-img { filter: brightness(1.08); }
+.featured-item:active .featured-img { filter: brightness(0.85); }
+.featured-name { font-size: 14px; font-weight: 600; margin-bottom: 2px; padding: 0 0 0 12px; }
+.featured-model { font-size: 12px; color: var(--accent); padding: 0 0 12px 12px; }
+
+/* ===== 底部 CTA ===== */
+.cta-section {
+  margin: 20px 16px;
+  background: linear-gradient(135deg, #2D6B5E 0%, #3D8B7A 50%, #4A9F8A 100%);
+  border-radius: 16px;
+  padding: 32px 24px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.cta-bg-deco {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.cta-circle {
+  position: absolute;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  border: 1px solid rgba(201, 168, 76, 0.1);
+  top: -70px;
+  right: -50px;
+}
+.cta-content {
+  position: relative;
+  z-index: 2;
+}
+.cta-text { color: white; font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+.cta-sub { color: rgba(255,255,255,0.6); font-size: 13px; margin-bottom: 18px; }
+.btn-gold {
+  background: var(--accent); color: white; border: none;
+  padding: 10px 32px; border-radius: 24px; font-size: 15px;
+  font-weight: 600; cursor: pointer; transition: all 0.3s;
+  box-shadow: 0 4px 12px rgba(232, 168, 124, 0.35);
+}
+.btn-gold:hover { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 6px 16px rgba(232, 168, 124, 0.45); }
+
+/* Tab Bar */
+.tabbar {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  border-top: 1px solid rgba(0,0,0,0.06);
+  z-index: 100;
+  max-width: 420px; margin: 0 auto;
+  padding: 6px 0 env(safe-area-inset-bottom, 0);
+}
+.tab-item {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 3px; padding: 6px 4px;
+  font-size: 11px; color: #9AA6A0; cursor: pointer; transition: color 0.3s; position: relative;
+}
+.tab-item .tab-icon { display: flex; align-items: center; justify-content: center; transition: transform 0.3s; }
+.tab-item:active .tab-icon { transform: scale(0.88); }
+.tab-item.active { color: var(--primary); }
+.tab-item.active .tab-icon::after {
+  content: ''; position: absolute; bottom: -2px; left: 50%; transform: translateX(-50%);
+  width: 4px; height: 4px; border-radius: 50%; background: var(--primary);
+}
+.tab-label { font-weight: 500; }
+
+/* 产品页 */
+.products-banner {
+  height: 140px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-size: 20px; font-weight: 700; letter-spacing: 2px;
+}
+.tab-bar {
+  display: flex; background: white; border-bottom: 1px solid #E5E8E5;
+  position: sticky; top: 0; z-index: 50;
+}
+.tab-bar .tab-item {
+  flex: 1; padding: 14px 0; font-size: 14px; color: var(--text-light); text-align: center;
+  border-bottom: 2px solid transparent; transition: all 0.3s;
+}
+.tab-bar .tab-item.active {
+  color: var(--primary); border-bottom-color: var(--accent); font-weight: 600;
+}
+.product-grid { display: grid; grid-template-columns: 1fr; gap: 12px; padding-top: 12px; }
+.product-item { display: flex; gap: 12px; padding: 12px; cursor: pointer; transition: filter 0.25s ease; }
+.product-item:hover .product-img { filter: brightness(1.08); }
+.product-item:active .product-img { filter: brightness(0.85); }
+.product-img {
+  width: 100px; height: 100px; flex-shrink: 0;
+  background: linear-gradient(135deg, #E8F0EC, #D0E8DD);
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 8px; font-size: 12px; color: var(--primary-light);
+  transition: filter 0.25s ease;
+}
+.product-info { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+.product-name { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
+.product-model { font-size: 12px; color: var(--accent); margin-bottom: 4px; }
+.product-desc { font-size: 12px; color: var(--text-light); line-height: 1.5; }
+
+/* 关于页 */
+.hero-section {
+  height: 160px;
+  background: linear-gradient(135deg, #2D6B5E, var(--primary));
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-size: 28px; font-weight: 700; letter-spacing: 4px;
+}
+.desc-title { font-size: 17px; font-weight: 700; color: var(--primary); margin-bottom: 12px; }
+.desc-text { font-size: 14px; color: var(--text-light); line-height: 1.8; margin-bottom: 10px; }
+.desc-text:last-child { margin-bottom: 0; }
+
+/* 时间线 */
+.timeline { position: relative; padding-left: 20px; }
+.timeline::before {
+  content: ''; position: absolute; left: 8px; top: 0; bottom: 0;
+  width: 2px; background: #D0D8D0;
+}
+.timeline-item { position: relative; padding-bottom: 20px; }
+.timeline-dot {
+  position: absolute; left: -15px; top: 4px;
+  width: 12px; height: 12px; border-radius: 50%;
+  background: var(--accent); border: 2px solid var(--bg);
+}
+.timeline-dot.first { width: 16px; height: 16px; left: -17px; top: 2px; background: var(--primary); }
+.tl-year { font-size: 15px; font-weight: 700; color: var(--primary); margin-bottom: 4px; }
+.tl-desc { font-size: 13px; color: var(--text-light); line-height: 1.6; }
+
+/* 认证 */
+.certs-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.cert-item { text-align: center; padding: 16px 8px; cursor: pointer; transition: transform 0.25s ease; }
+.cert-item:active { transform: scale(0.96); }
+.cert-img {
+  width: 64px; height: 64px; border-radius: 50%; margin: 0 auto 8px;
+  background: linear-gradient(135deg, #E8F0EC, rgba(232, 168, 124, 0.2));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; color: var(--primary-light);
+  transition: filter 0.25s ease;
+}
+.cert-item:hover .cert-img { filter: brightness(1.15); }
+.cert-item:active .cert-img { filter: brightness(0.85); }
+.cert-name { font-size: 12px; color: var(--text-light); }
+
+/* 工厂实拍 */
+.factory-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+.factory-item { cursor: pointer; transition: transform 0.25s ease; }
+.factory-item:active { transform: scale(0.96); }
+.factory-img {
+  height: 120px;
+  background: linear-gradient(135deg, #E8F0EC, #D0E8DD);
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 8px; font-size: 13px; color: var(--primary-light);
+  transition: filter 0.25s ease;
+}
+.factory-item:hover .factory-img { filter: brightness(1.08); }
+.factory-item:active .factory-img { filter: brightness(0.85); }
+
+/* 联系我们 */
+.info-card { padding: 20px; }
+.info-item { padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
+.info-item:last-child { border-bottom: none; }
+.info-label { font-size: 12px; color: var(--text-light); margin-bottom: 4px; }
+.info-value { font-size: 15px; color: var(--text); }
+.action-btns { display: flex; gap: 12px; margin-top: 16px; }
+.action-btn {
+  flex: 1; padding: 12px; border: 1px solid var(--primary); border-radius: 8px;
+  background: white; color: var(--primary); font-size: 14px;
+  cursor: pointer; transition: background 0.3s;
+}
+.action-btn:hover { background: #EEF4F0; }
+
+/* 表单 */
+.form-group { margin-bottom: 16px; }
+.form-label { display: block; font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+.form-input, .form-textarea {
+  width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px;
+  font-size: 14px; outline: none; transition: border-color 0.3s;
+  box-sizing: border-box;
+}
+.form-input:focus, .form-textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(61, 139, 122, 0.12); }
+.form-textarea { height: 100px; resize: none; }
+.char-count { display: block; text-align: right; font-size: 12px; color: #B0BAB4; margin-top: 4px; }
+.submit-btn { width: 100%; margin-top: 8px; }
+.submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* 地图占位 */
+.map-placeholder {
+  height: 180px;
+  background: linear-gradient(135deg, #E8F0EC, #D0E8DD);
+  display: flex; align-items: center; justify-content: center;
+  border-radius: var(--radius); font-size: 16px; color: var(--primary-light);
+}
+
+/* 底部 */
+.footer {
+  text-align: center; padding: 20px; font-size: 12px; color: #B0BAB4;
+}
+
+/* 弹窗 */
+.modal-overlay {
+  display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+  z-index: 200; align-items: center; justify-content: center;
+}
+.modal-overlay.show { display: flex; }
+.modal-box {
+  background: white; border-radius: var(--radius); padding: 24px;
+  width: 300px; max-width: 90%;
+}
+.modal-title { font-size: 17px; font-weight: 700; color: var(--primary); margin-bottom: 8px; }
+.modal-model { font-size: 12px; color: var(--accent); margin-bottom: 8px; }
+.modal-desc { font-size: 14px; color: var(--text-light); line-height: 1.6; margin-bottom: 16px; }
+.modal-close {
+  width: 100%; padding: 10px; background: var(--primary); color: white;
+  border: none; border-radius: 8px; font-size: 14px; cursor: pointer;
+}
+.toast {
+  position: fixed; top: 80px; left: 50%; transform: translateX(-50%);
+  background: rgba(0,0,0,0.75); color: white; padding: 10px 20px;
+  border-radius: 8px; font-size: 14px; z-index: 300;
+  display: none;
+}
+.toast.show { display: block; }
+</style>
+</head>
+<body>
+
+<!-- 页面容器 -->
+<div id="app"></div>
+
+<!-- 弹窗 -->
+<div class="modal-overlay" id="modal">
+  <div class="modal-box">
+    <div class="modal-title" id="modalTitle"></div>
+    <div class="modal-model" id="modalModel"></div>
+    <div class="modal-desc" id="modalDesc"></div>
+    <button class="modal-close" onclick="closeModal()">了解更多</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ================= 数据 =================
+const companyInfo = {
+  name: '深圳市XX美容仪器科技有限公司',
+  address: '广东省深圳市宝安区XX科技园A栋',
+  phone: '0755-88888888',
+  email: 'contact@beauty-instruments.com'
+};
+
+const products = {
+  0: [
+    { id: 1, name: '多功能美容仪', model: 'BI-BM200', desc: '集清洁、导入、提拉、冷敷于一体的多功能美容仪器，满足日常护肤全流程需求。' },
+    { id: 2, name: '射频紧肤仪', model: 'BI-RF400', desc: '采用多极射频技术，深入真皮层刺激胶原蛋白再生，有效紧致肌肤、淡化皱纹。' },
+    { id: 3, name: '光子嫩肤仪', model: 'BI-IPL500', desc: '强脉冲光技术，改善肤色不均、红血丝、毛孔粗大等问题，焕亮肌肤。' },
+    { id: 4, name: '超声波导入仪', model: 'BI-US600', desc: '高频超声波振动，促进护肤品有效成分深层渗透，提升护肤效果。' },
+    { id: 5, name: '微电流提拉仪', model: 'BI-MC700', desc: '微电流刺激肌肉层，即时提拉紧致，塑造面部轮廓线条。' }
+  ],
+  1: [
+    { id: 6, name: '智能皮肤分析仪', model: 'BI-SK100', desc: 'AI智能识别，多维分析肌肤水分、油分、弹性、色素等指标。' },
+    { id: 7, name: '专业皮肤镜', model: 'BI-SK200', desc: '高清放大成像，深层观测皮肤纹理、毛孔、斑点和炎症情况。' },
+    { id: 8, name: '皮肤水分测试仪', model: 'BI-SK300', desc: '精密传感器，快速准确测量皮肤角质层含水量。' },
+    { id: 9, name: '肤色检测仪', model: 'BI-SK400', desc: '专业肤色分析，提供精准的肤色数据和美白护理建议。' }
+  ],
+  2: [
+    { id: 10, name: '深层洁面仪', model: 'BI-CL300', desc: '声波震动技术，深入清洁毛孔，去除油脂和化妆品残留。' },
+    { id: 11, name: '黑头导出仪', model: 'BI-CL500', desc: '真空吸附技术，温和导出黑头粉刺，不伤肌肤。' },
+    { id: 12, name: '冷热喷雾仪', model: 'BI-CL600', desc: '纳米级喷雾粒子，热敷打开毛孔，冷敷收缩紧致。' },
+    { id: 13, name: '去角质焕肤仪', model: 'BI-CL700', desc: '旋转刷头配合专用刷毛，温和去除老化角质，促进新陈代谢。' }
+  ]
+};
+
+const milestones = [
+  { year: '2015', desc: '公司成立，专注美容仪器研发' },
+  { year: '2017', desc: '首款智能皮肤检测仪上市，获市场好评' },
+  { year: '2019', desc: '通过ISO9001认证，建立万级无尘车间' },
+  { year: '2021', desc: '产品出口欧美，年营收突破5000万' },
+  { year: '2023', desc: '获国家高新技术企业认定，专利突破50项' },
+  { year: '2025', desc: '与全球30+品牌建立战略合作' }
+];
+
+const certifications = [
+  { name: 'ISO9001', desc: '质量管理体系认证' },
+  { name: 'CE', desc: '欧盟安全认证' },
+  { name: 'FCC', desc: '美国FCC认证' }
+];
+
+const factoryImages = [
+  '研发实验室', '生产车间', '品质检测', '成品仓库'
+];
+
+// ================= 渲染函数 =================
+const $ = (sel, el=document) => el.querySelector(sel);
+const $$ = (sel, el=document) => [...el.querySelectorAll(sel)];
+
+function renderHome() {
+  return `
+    <div class="swiper-wrap">
+      <div class="banner" id="banner">
+        ${[
+          {tag:'BRAND',title:'高端美容仪器制造商',sub:'自主研发 · 精密制造 · 全球服务'},
+          {tag:'R&D',title:'自主研发 · 技术创新',sub:'30+人研发团队 · 50+专利技术'},
+          {tag:'QUALITY',title:'品质认证 · 全球信赖',sub:'CE、FCC、RoHS · ISO9001认证'},
+          {tag:'SERVICE',title:'科技守护美丽',sub:'OEM/ODM · 品牌定制 · 全球服务'}
+        ].map(s => `
+          <div class="banner-slide">
+            <div class="banner-bg-deco">
+              <div class="banner-circle c1"></div>
+              <div class="banner-circle c2"></div>
+              <div class="banner-circle c3"></div>
+            </div>
+            <div class="banner-content">
+              <div class="banner-tag">${s.tag}</div>
+              <div class="banner-title">${s.title}</div>
+              <div class="banner-sub">${s.sub}</div>
+              <div class="banner-gold-line"></div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+      <div class="swiper-dots">
+        ${[0,1,2,3].map(i => `<div class="swiper-dot${i===0?' active':''}"></div>`).join('')}
+      </div>
+    </div>
+
+    <div class="quick-stats">
+      <div class="stat-item">
+        <span class="stat-num">50+</span>
+        <span class="stat-label">专利技术</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <span class="stat-num">30+</span>
+        <span class="stat-label">研发团队</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <span class="stat-num">30+</span>
+        <span class="stat-label">出口国家</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <span class="stat-num">1</span>
+        <span class="stat-label">高端制造</span>
+      </div>
+    </div>
+
+    <div class="container section">
+      <div class="card brand-story">
+        <div class="story-badge">
+          <span class="story-badge-line"></span>
+          <span class="story-badge-text">BRAND STORY</span>
+          <span class="story-badge-line"></span>
+        </div>
+        <div class="story-title">专业美容仪器制造商</div>
+        <div class="story-desc">我们是一家集研发、生产、销售于一体的美容仪器开发生产厂家。依托强大的技术团队和精密制造能力，为全球客户提供高品质的美容仪器解决方案。</div>
+        <div class="story-highlight">
+          <span class="hl-item"><span class="hl-icon">◇</span>从皮肤检测到护理仪器</span>
+          <span class="hl-item"><span class="hl-icon">◇</span>用科技守护美丽事业</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="container section">
+      <div class="section-title">核心优势</div>
+      <div class="section-divider"></div>
+      <div class="advantages-grid">
+        <div class="card advantage-item">
+          <div class="adv-icon-wrap"><span class="adv-icon">🔬</span></div>
+          <div class="adv-title">自主研发</div>
+          <div class="adv-desc">30+人研发团队，持续技术创新，50+专利技术</div>
+        </div>
+        <div class="card advantage-item">
+          <div class="adv-icon-wrap"><span class="adv-icon">⚙️</span></div>
+          <div class="adv-title">精密制造</div>
+          <div class="adv-desc">万级无尘车间，ISO质量管理体系，5000㎡生产基地</div>
+        </div>
+        <div class="card advantage-item">
+          <div class="adv-icon-wrap"><span class="adv-icon">🏆</span></div>
+          <div class="adv-title">品质认证</div>
+          <div class="adv-desc">CE、FCC、RoHS等国际认证齐全，产品远销30+国家</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container section">
+      <div class="section-title">主打产品</div>
+      <div class="section-divider"></div>
+      <div class="featured-grid">
+        ${[
+          {name:'智能皮肤检测仪',model:'BI-SK100',cls:'fi-0'},
+          {name:'多功能美容仪',model:'BI-BM200',cls:'fi-1'},
+          {name:'深层清洁仪',model:'BI-CL300',cls:'fi-2'},
+          {name:'射频紧肤仪',model:'BI-RF400',cls:'fi-3'}
+        ].map(p => `
+          <div class="card featured-item" onclick="showToast('查看完整产品列表请切换到产品中心')">
+            <div class="featured-img ${p.cls}">${p.name}</div>
+            <div class="featured-name">${p.name}</div>
+            <div class="featured-model">${p.model}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <div class="cta-section">
+      <div class="cta-bg-deco"><div class="cta-circle"></div></div>
+      <div class="cta-content">
+        <div class="cta-text">开启美容仪器合作之旅</div>
+        <div class="cta-sub">OEM/ODM · 品牌定制 · 全球服务</div>
+        <button class="btn-gold" onclick="switchTab(3)" style="position:relative;z-index:2">联系我们 →</button>
+      </div>
+    </div>
+
+    ${renderTabbar(0)}
+  `;
+}
+
+function renderProducts() {
+  const cats = ['美容仪器类', '皮肤检测类', '清洁护理类'];
+  const curTab = thisTab || 0;
+  const cur = products[curTab] || [];
+  return `
+    <div class="swiper-wrap" style="margin-bottom:0">
+      <div class="banner" id="banner-products">
+        ${[
+          {tag:'PRODUCTS',title:'美容仪器全系列',sub:'多极射频 · 光子嫩肤 · 超声波导入'},
+          {tag:'CUSTOMIZE',title:'支持OEM/ODM定制',sub:'品牌定制 · 品质保障 · 全球交付'},
+          {tag:'QUALITY',title:'万级无尘车间制造',sub:'ISO质量管理 · CE/FCC/RoHS认证'}
+        ].map((s,i) => `
+          <div class="banner-slide">
+            <div class="banner-bg-deco">
+              <div class="banner-circle c1"></div>
+              <div class="banner-circle c2"></div>
+              <div class="banner-circle c3"></div>
+            </div>
+            <div class="banner-content">
+              <div class="banner-tag">${s.tag}</div>
+              <div class="banner-title">${s.title}</div>
+              <div class="banner-sub">${s.sub}</div>
+              <div class="banner-gold-line"></div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+      <div class="swiper-dots" id="dots-products">
+        ${[0,1,2].map(i => `<div class="swiper-dot${i===0?' active':''}"></div>`).join('')}
+      </div>
+    </div>
+    <div class="tab-bar" id="product-tabs">
+      ${cats.map((c,i) => `<div class="tab-item${i===curTab?' active':''}" data-idx="${i}" onclick="switchProductTab(${i})">${c}</div>`).join('')}
+    </div>
+    <div class="container">
+      <div class="product-grid">
+        ${cur.map(p => `
+          <div class="card product-item" onclick="showModal('${p.name}','${p.model}','${p.desc}')">
+            <div class="product-img">${p.name}</div>
+            <div class="product-info">
+              <div class="product-name">${p.name}</div>
+              <div class="product-model">${p.model}</div>
+              <div class="product-desc">${p.desc}</div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+    ${renderTabbar(1)}
+  `;
+}
+
+function renderAbout() {
+  return `
+    <div class="swiper-wrap" style="margin-bottom:0">
+      <div class="banner" id="banner-about">
+        ${[
+          {tag:'ABOUT',title:'关于我们',sub:'以技术创新为驱动 · 以品质为生命'},
+          {tag:'HISTORY',title:'十年专注 · 砥砺前行',sub:'从2015到今日，持续深耕美容仪器领域'},
+          {tag:'VISION',title:'科技守护美丽',sub:'致力于成为全球领先的美容仪器解决方案提供商'}
+        ].map((s,i) => `
+          <div class="banner-slide">
+            <div class="banner-bg-deco">
+              <div class="banner-circle c1"></div>
+              <div class="banner-circle c2"></div>
+              <div class="banner-circle c3"></div>
+            </div>
+            <div class="banner-content">
+              <div class="banner-tag">${s.tag}</div>
+              <div class="banner-title">${s.title}</div>
+              <div class="banner-sub">${s.sub}</div>
+              <div class="banner-gold-line"></div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+      <div class="swiper-dots" id="dots-about">
+        ${[0,1,2].map(i => `<div class="swiper-dot${i===0?' active':''}"></div>`).join('')}
+      </div>
+    </div>
+
+    <div class="container section">
+      <div class="card">
+        <div class="desc-title">公司简介</div>
+        <div class="desc-text">我们是一家专注于美容仪器研发、生产和销售的高新技术企业。公司成立于2015年，总部位于深圳，拥有占地面积5000平方米的现代化生产基地。</div>
+        <div class="desc-text">公司汇聚了光学、电子、生物学等多领域专业人才，建立了30余人的研发团队，累计获得50余项专利技术。我们的产品远销欧美、东南亚等30多个国家和地区，与众多知名美容品牌建立了长期合作关系。</div>
+        <div class="desc-text">我们始终坚持以技术创新为驱动，以品质为生命，致力于为全球客户提供安全、高效、专业的美容仪器解决方案。</div>
+      </div>
+    </div>
+
+    <div class="container section">
+      <div class="section-title">发展历程</div>
+      <div class="section-divider"></div>
+      <div class="timeline">
+        ${milestones.map((m,i) => `
+          <div class="timeline-item">
+            <div class="timeline-dot${i===0?' first':''}"></div>
+            <div class="tl-year">${m.year}</div>
+            <div class="tl-desc">${m.desc}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <div class="container section">
+      <div class="section-title">资质认证</div>
+      <div class="section-divider"></div>
+      <div class="certs-grid">
+        ${certifications.map(c => `
+          <div class="card cert-item">
+            <div class="cert-img">${c.name}</div>
+            <div class="cert-name">${c.name}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <div class="container section">
+      <div class="section-title">工厂实拍</div>
+      <div class="section-divider"></div>
+      <div class="factory-grid">
+        ${factoryImages.map(f => `
+          <div class="factory-item">
+            <div class="factory-img">${f}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+    ${renderTabbar(2)}
+  `;
+}
+
+function renderContact() {
+  return `
+    <div class="swiper-wrap" style="margin-bottom:0">
+      <div class="banner" id="banner-contact">
+        ${[
+          {tag:'CONTACT',title:'联系我们',sub:'期待与您携手合作 · 共同发展'},
+          {tag:'SERVICE',title:'全球服务网络',sub:'30+国家客户信赖 · 本地化支持'},
+          {tag:'COOPERATE',title:'合作咨询',sub:'OEM/ODM · 品牌定制 · 技术方案'}
+        ].map((s,i) => `
+          <div class="banner-slide">
+            <div class="banner-bg-deco">
+              <div class="banner-circle c1"></div>
+              <div class="banner-circle c2"></div>
+              <div class="banner-circle c3"></div>
+            </div>
+            <div class="banner-content">
+              <div class="banner-tag">${s.tag}</div>
+              <div class="banner-title">${s.title}</div>
+              <div class="banner-sub">${s.sub}</div>
+              <div class="banner-gold-line"></div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+      <div class="swiper-dots" id="dots-contact">
+        ${[0,1,2].map(i => `<div class="swiper-dot${i===0?' active':''}"></div>`).join('')}
+      </div>
+    </div>
+
+    <div class="container section">
+      <div class="section-title">联系方式</div>
+      <div class="section-divider"></div>
+      <div class="card info-card">
+        <div class="info-item">
+          <div class="info-label">🏢 公司名称</div>
+          <div class="info-value">${companyInfo.name}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">📍 公司地址</div>
+          <div class="info-value">${companyInfo.address}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">📞 联系电话</div>
+          <div class="info-value">${companyInfo.phone}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">📧 电子邮箱</div>
+          <div class="info-value">${companyInfo.email}</div>
+        </div>
+      </div>
+      <div class="action-btns">
+        <button class="action-btn" onclick="showToast('拨号：${companyInfo.phone}')">📞 一键拨号</button>
+        <button class="action-btn" onclick="navigator.clipboard.writeText('${companyInfo.address}');showToast('地址已复制')">📋 复制地址</button>
+      </div>
+    </div>
+
+    <div class="container section">
+      <div class="section-title">在线留言</div>
+      <div class="section-divider"></div>
+      <div class="card form-card">
+        <div class="form-group">
+          <label class="form-label">姓名</label>
+          <input class="form-input" id="formName" placeholder="请输入您的姓名">
+        </div>
+        <div class="form-group">
+          <label class="form-label">电话</label>
+          <input class="form-input" id="formPhone" type="tel" placeholder="请输入您的联系电话">
+        </div>
+        <div class="form-group">
+          <label class="form-label">留言内容</label>
+          <textarea class="form-textarea" id="formMsg" placeholder="请描述您的需求或问题"></textarea>
+          <span class="char-count" id="charCount">0/500</span>
+        </div>
+        <button class="btn-gold submit-btn" onclick="submitForm()">提交留言</button>
+      </div>
+    </div>
+
+    <div class="container section">
+      <div class="section-title">公司位置</div>
+      <div class="section-divider"></div>
+      <div class="map-placeholder">地图加载区域（接入腾讯地图API后显示）</div>
+    </div>
+
+    <div class="footer">© 2025 美容仪器 版权所有</div>
+    ${renderTabbar(3)}
+  `;
+}
+
+function renderTabbar(active) {
+  const tabs = [
+    {svg:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-5h4v5h4a1 1 0 0 0 1-1v-9"/></svg>',name:'首页'},
+    {svg:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>',name:'产品中心'},
+    {svg:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 12l0 4"/><path d="M12 8l0 0.01"/></svg>',name:'关于我们'},
+    {svg:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 4l10 8 10-8"/></svg>',name:'联系我们'}
+  ];
+  return `
+    <div class="tabbar">
+      ${tabs.map((t,i) => `
+        <div class="tab-item${i===active?' active':''}" onclick="switchTab(${i})">
+          <div class="tab-icon">${t.svg}</div>
+          <div class="tab-label">${t.name}</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+// ================= 逻辑 =================
+let currentPage = 0;
+let thisTab = 0;
+let swiperIdx = 0;
+let swiperTimer = null;
+
+function switchTab(idx) {
+  currentPage = idx;
+  render();
+}
+
+function switchProductTab(idx) {
+  thisTab = idx;
+  render();
+}
+
+function render() {
+  const pages = [renderHome, renderProducts, renderAbout, renderContact];
+  document.getElementById('app').innerHTML = pages[currentPage]();
+  
+  // 所有页面都启动轮播
+  const bannerIds = ['banner','banner-products','banner-about','banner-contact'];
+  const dotsIds = ['','dots-products','dots-about','dots-contact'];
+  const slideCounts = [4, 3, 3, 3];
+  
+  if (currentPage < bannerIds.length) {
+    startSwiper(bannerIds[currentPage], dotsIds[currentPage], slideCounts[currentPage]);
+  }
+  
+  // 绑定文本输入
+  if (currentPage === 3) {
+    const msg = document.getElementById('formMsg');
+    if (msg) msg.oninput = function() {
+      document.getElementById('charCount').textContent = this.value.length + '/500';
+    };
+  }
+  
+  // 恢复 product tab
+  if (currentPage === 1) {
+    const tabs = document.getElementById('product-tabs');
+    if (tabs && tabs.children[thisTab]) tabs.children[thisTab].classList.add('active');
+  }
+}
+
+function startSwiper(bannerId, dotsId, slideCount) {
+  clearInterval(swiperTimer);
+  const banner = document.getElementById(bannerId);
+  if (!banner) return;
+  swiperIdx = 0;
+  swiperTimer = setInterval(() => {
+    swiperIdx = (swiperIdx + 1) % slideCount;
+    banner.style.transform = `translateX(-${swiperIdx * 100}%)`;
+    // 更新 dots
+    if (dotsId) {
+      document.querySelectorAll('#' + dotsId + ' .swiper-dot').forEach((d,i) => {
+        d.classList.toggle('active', i === swiperIdx);
+      });
+    } else {
+      document.querySelectorAll('.swiper-dot').forEach((d,i) => {
+        d.classList.toggle('active', i === swiperIdx);
+      });
+    }
+  }, 4000);
+}
+
+function showModal(name, model, desc) {
+  document.getElementById('modalTitle').textContent = name;
+  document.getElementById('modalModel').textContent = '型号：' + model;
+  document.getElementById('modalDesc').textContent = desc;
+  document.getElementById('modal').classList.add('show');
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('show');
+}
+
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2000);
+}
+
+function submitForm() {
+  const name = document.getElementById('formName')?.value || '';
+  const phone = document.getElementById('formPhone')?.value || '';
+  const msg = document.getElementById('formMsg')?.value || '';
+  if (!name || !phone) {
+    showToast('请填写姓名和电话');
+    return;
+  }
+  showToast('留言已提交，我们将尽快与您联系！');
+}
+
+// ================= 启动 =================
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,125 @@
+<view class="index-page">
+
+  <!-- ===== 轮播图（组件） ===== -->
+  <banner-swiper banners="{{banners}}" activeSwiper="{{activeSwiper}}" bind:change="onSwiperChange" />
+
+  <!-- ===== 快速数据行 ===== -->
+  <view class="quick-stats">
+    <view class="stat-item">
+      <text class="stat-num">30+</text>
+      <text class="stat-label">产品系列</text>
+    </view>
+    <view class="stat-divider"></view>
+    <view class="stat-item">
+      <text class="stat-num">30+</text>
+      <text class="stat-label">合作客户</text>
+    </view>
+    <view class="stat-divider"></view>
+    <view class="stat-item">
+      <text class="stat-num">100+</text>
+      <text class="stat-label">专利技术</text>
+    </view>
+    <view class="stat-divider"></view>
+    <view class="stat-item">
+      <text class="stat-num">24/7</text>
+      <text class="stat-label">售后支持</text>
+    </view>
+  </view>
+
+  <!-- ===== 品牌故事 ===== -->
+  <view class="container section">
+    <view class="brand-story card">
+      <view class="story-badge">
+        <text class="story-badge-line"></text>
+        <text class="story-badge-text">BRAND STORY</text>
+        <text class="story-badge-line"></text>
+      </view>
+      <view class="story-title">采薇 · 专业美容仪器品牌</view>
+      <view class="story-desc">
+        采薇品牌集研发、生产、销售于一体，以30+产品系列和100+专利技术，
+        为全球客户提供高品质的美容仪器解决方案。
+      </view>
+      <view class="story-highlight">
+        <view class="hl-item">
+          <text class="hl-icon">◇</text>
+          <text>从皮肤检测到射频护理，全品类覆盖</text>
+        </view>
+        <view class="hl-item">
+          <text class="hl-icon">◇</text>
+          <text>采薇科技，守护您的美丽</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ===== 核心优势 ===== -->
+  <view class="container section">
+    <section-header title="核心优势" />
+    <view class="advantages-grid">
+      <view class="advantage-item card" wx:for="{{advantages}}" wx:key="index">
+        <view class="adv-icon-wrap">
+          <text class="adv-icon">{{item.icon}}</text>
+        </view>
+        <view class="adv-title">{{item.title}}</view>
+        <view class="adv-desc">{{item.desc}}</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ===== 热销推荐（横向滚动） ===== -->
+  <view class="container section">
+    <section-header title="热销推荐" />
+    <scroll-view class="hot-scroll" scroll-x enhanced show-scrollbar="{{false}}" bindscroll="onHotScroll">
+      <view class="hot-track">
+        <view class="hot-item card" wx:for="{{hotProducts}}" wx:key="index" data-id="{{item.id}}" bindtap="goToProductDetail">
+          <view class="hot-img-wrap">
+            <view class="hot-img img-hot-{{index}}">
+              <text>{{item.imgText}}</text>
+            </view>
+            <view class="hot-badge" wx:if="{{index < 3}}">热卖</view>
+          </view>
+          <view class="hot-info">
+            <view class="hot-name">{{item.name}}</view>
+            <view class="hot-model">{{item.model}}</view>
+            <view class="hot-tag">{{item.tag}}</view>
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+    <view class="hot-scrollbar" wx:if="{{hotScrollLeft > 0 || hotScrollLeft < hotScrollMax}}">
+      <view class="hot-thumb" style="left:{{hotThumbLeft}}%;width:{{hotThumbWidth}}%"></view>
+    </view>
+  </view>
+
+  <!-- ===== 主打产品 ===== -->
+  <view class="container section">
+    <section-header title="主打产品" />
+    <view class="featured-grid">
+      <view class="featured-item card" wx:for="{{featuredProducts}}" wx:key="index" data-id="{{item.id}}" bindtap="goToProductDetail">
+        <view class="featured-img img-{{index}}">
+          <text>{{item.imgText}}</text>
+        </view>
+        <view class="featured-info">
+          <view class="featured-name">{{item.name}}</view>
+          <view class="featured-model">{{item.model}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ===== 底部 CTA ===== -->
+  <view class="cta-section">
+    <view class="cta-inner">
+      <view class="cta-bg-deco">
+        <view class="cta-circle"></view>
+      </view>
+      <view class="cta-text">开启美容仪器合作之旅</view>
+      <view class="cta-sub">OEM/ODM · 品牌定制 · 全球服务</view>
+      <button class="cta-btn" bindtap="goToContact">
+        <text>联系我们</text>
+        <text class="cta-arrow">→</text>
+      </button>
+    </view>
+  </view>
+
+</view>

@@ -1,0 +1,254 @@
+/* ===== 使命 · 愿景 · 价值观 ===== */
+.mvv-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+}
+
+.mvv-item {
+  padding: 36rpx 30rpx;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.mvv-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4rpx;
+}
+
+.mvv-item:nth-child(1)::before { background: #2d5016; }
+.mvv-item:nth-child(2)::before { background: #c9a84c; }
+.mvv-item:nth-child(3)::before { background: linear-gradient(90deg, #2d5016, #c9a84c); }
+
+.mvv-icon-wrap {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16rpx;
+}
+
+.mvv-item:nth-child(1) .mvv-icon-wrap { background: rgba(45, 80, 22, 0.1); }
+.mvv-item:nth-child(2) .mvv-icon-wrap { background: rgba(201, 168, 76, 0.15); }
+.mvv-item:nth-child(3) .mvv-icon-wrap { background: linear-gradient(135deg, rgba(45, 80, 22, 0.08), rgba(201, 168, 76, 0.08)); }
+
+.mvv-icon {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 50%;
+}
+
+.mvv-icon-mission {
+  background: #2d5016;
+  box-shadow: 0 0 0 4rpx rgba(45, 80, 22, 0.2);
+}
+
+.mvv-icon-vision {
+  background: #c9a84c;
+  box-shadow: 0 0 0 4rpx rgba(201, 168, 76, 0.25);
+}
+
+.mvv-icon-values {
+  background: linear-gradient(135deg, #2d5016 40%, #c9a84c 100%);
+}
+
+.mvv-label {
+  font-size: 24rpx;
+  color: #c9a84c;
+  letter-spacing: 6rpx;
+  margin-bottom: 8rpx;
+}
+
+.mvv-title {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #2d5016;
+  margin-bottom: 16rpx;
+}
+
+.mvv-desc {
+  font-size: 26rpx;
+  color: #666666;
+  line-height: 1.8;
+  text-align: left;
+}
+
+.mvv-highlight {
+  color: #2d5016;
+  font-weight: 600;
+}
+
+/* ===== 公司简介 ===== */
+.company-desc {
+  padding: 36rpx 30rpx;
+}
+
+.desc-text {
+  font-size: 26rpx;
+  color: #555555;
+  line-height: 1.8;
+  margin-bottom: 16rpx;
+  text-indent: 2em;
+}
+
+.desc-text:last-child {
+  margin-bottom: 0;
+}
+
+/* ===== 发展历程 ===== */
+.timeline {
+  position: relative;
+  padding: 20rpx 0;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 4rpx;
+  background: linear-gradient(180deg, #2d5016, #c9a84c);
+  transform: translateX(-50%);
+}
+
+.timeline-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 30rpx;
+  position: relative;
+}
+
+.timeline-dot {
+  position: absolute;
+  left: 50%;
+  top: 24rpx;
+  width: 20rpx;
+  height: 20rpx;
+  background: #c9a84c;
+  border-radius: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  border: 4rpx solid #f5f0e8;
+}
+
+.timeline-dot.first {
+  background: #2d5016;
+  width: 24rpx;
+  height: 24rpx;
+}
+
+.timeline-wrap {
+  width: 50%;
+  padding: 0 24rpx;
+  box-sizing: border-box;
+}
+
+.tl-left {
+  padding-right: 40rpx;
+  text-align: right;
+}
+
+.tl-right {
+  padding-left: 40rpx;
+  margin-left: 50%;
+}
+
+.timeline-content {
+  padding: 24rpx 20rpx;
+  display: inline-block;
+  text-align: left;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.tl-year {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #2d5016;
+  margin-bottom: 8rpx;
+}
+
+.tl-desc {
+  font-size: 24rpx;
+  color: #666666;
+  line-height: 1.5;
+}
+
+/* ===== 资质认证 ===== */
+.certs-grid {
+  display: flex;
+  justify-content: space-between;
+  gap: 20rpx;
+}
+
+.cert-item {
+  flex: 1;
+  text-align: center;
+  padding: 28rpx 16rpx;
+}
+
+.cert-icon-bg {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2d5016, #3a6b1e);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16rpx;
+}
+
+.cert-icon-text {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #c9a84c;
+  letter-spacing: 2rpx;
+}
+
+.cert-name {
+  font-size: 24rpx;
+  color: #555555;
+  font-weight: 500;
+}
+
+/* ===== 联系我们（about页内） ===== */
+.contact-section {
+  padding-bottom: 60rpx;
+}
+
+.contact-card {
+  padding: 30rpx;
+}
+
+.contact-row {
+  display: flex;
+  padding: 18rpx 0;
+  border-bottom: 1rpx solid rgba(0, 0, 0, 0.04);
+}
+
+.contact-row:last-child {
+  border-bottom: none;
+}
+
+.contact-label {
+  width: 80rpx;
+  font-size: 26rpx;
+  color: #2d5016;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.contact-value {
+  font-size: 26rpx;
+  color: #555555;
+  line-height: 1.5;
+  flex: 1;
+}

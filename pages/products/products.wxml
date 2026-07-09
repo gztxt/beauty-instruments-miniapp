@@ -1,0 +1,46 @@
+<view class="products-page">
+
+  <!-- ===== 顶部轮播图（复用组件） ===== -->
+  <banner-swiper banners="{{banners}}" activeSwiper="{{activeSwiper}}" bind:change="onSwiperChange" />
+
+  <!-- ===== 分类 tab ===== -->
+  <view class="tab-bar">
+    <view
+      class="tab-item {{currentTab === item.index ? 'active' : ''}}"
+      wx:for="{{categories}}"
+      wx:key="index"
+      data-index="{{item.index}}"
+      bindtap="switchTab"
+    >
+      <text>{{item.name}}</text>
+    </view>
+  </view>
+
+  <!-- ===== 产品列表 ===== -->
+  <view class="container">
+    <view class="product-grid">
+      <view
+        class="product-item card"
+        wx:for="{{currentProducts}}"
+        wx:key="id"
+        data-product="{{item}}"
+        bindtap="showProductDetail"
+      >
+        <view class="product-img placeholder-img">
+          <text>{{item.imgText}}</text>
+        </view>
+        <view class="product-info">
+          <view class="product-name">{{item.name}}</view>
+          <view class="product-model">{{item.model}}</view>
+          <view class="product-desc">{{item.desc}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ===== 空状态 ===== -->
+  <view class="empty-tip" wx:if="{{currentProducts.length === 0}}">
+    <text>暂无产品数据</text>
+  </view>
+
+</view>

@@ -1,0 +1,157 @@
+/* ===== 联系信息卡片 ===== */
+.info-card {
+  padding: 30rpx;
+}
+
+.info-item {
+  display: flex;
+  align-items: flex-start;
+  padding: 24rpx 0;
+  border-bottom: 2rpx solid #f0ebe4;
+}
+
+.info-item:last-child {
+  border-bottom: none;
+}
+
+.info-icon {
+  width: 40rpx;
+  height: 40rpx;
+  flex-shrink: 0;
+  margin-right: 20rpx;
+  margin-top: 4rpx;
+}
+
+.info-icon image {
+  width: 100%;
+  height: 100%;
+}
+
+.info-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.info-label {
+  font-size: 22rpx;
+  color: #c9a84c;
+  letter-spacing: 2rpx;
+  font-weight: 500;
+}
+
+.info-value {
+  font-size: 28rpx;
+  color: #333333;
+  line-height: 1.5;
+}
+
+/* ===== 快捷操作 ===== */
+.action-btns {
+  display: flex;
+  gap: 20rpx;
+  margin-top: 30rpx;
+}
+
+.action-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10rpx;
+  font-size: 26rpx;
+  padding: 22rpx 0;
+}
+
+.btn-icon {
+  width: 28rpx;
+  height: 28rpx;
+}
+
+.action-btn image {
+  filter: brightness(0) invert(1);
+}
+
+/* ===== 留言表单 ===== */
+.form-card {
+  padding: 30rpx;
+}
+
+.form-group {
+  margin-bottom: 30rpx;
+}
+
+.form-label {
+  display: block;
+  font-size: 26rpx;
+  color: #333333;
+  font-weight: 500;
+  margin-bottom: 12rpx;
+}
+
+.form-input {
+  width: 100%;
+  height: 72rpx;
+  background: #f8f5f0;
+  border-radius: 8rpx;
+  padding: 0 24rpx;
+  font-size: 26rpx;
+  color: #333333;
+  box-sizing: border-box;
+  border: 2rpx solid transparent;
+}
+
+.form-input:focus {
+  border-color: #2d5016;
+}
+
+.form-textarea {
+  width: 100%;
+  height: 200rpx;
+  background: #f8f5f0;
+  border-radius: 8rpx;
+  padding: 20rpx 24rpx;
+  font-size: 26rpx;
+  color: #333333;
+  box-sizing: border-box;
+  border: 2rpx solid transparent;
+  resize: none;
+}
+
+.form-textarea:focus {
+  border-color: #2d5016;
+}
+
+.char-count {
+  display: block;
+  text-align: right;
+  font-size: 22rpx;
+  color: #cccccc;
+  margin-top: 8rpx;
+}
+
+.submit-btn {
+  width: 100%;
+  margin-top: 20rpx;
+}
+
+.submit-btn[disabled] {
+  opacity: 0.5;
+}
+
+/* ===== 地图容器 ===== */
+.map-container {
+  width: 100%;
+  height: 400rpx;
+  border-radius: 16rpx;
+  overflow: hidden;
+}
+
+/* ===== 底部版权 ===== */
+.footer {
+  text-align: center;
+  padding: 40rpx 30rpx 60rpx;
+  font-size: 22rpx;
+  color: #cccccc;
+}

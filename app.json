@@ -1,0 +1,51 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/products/products",
+    "pages/product-detail/product-detail",
+    "pages/about/about",
+    "pages/contact/contact"
+  ],
+  "window": {
+    "navigationBarBackgroundColor": "#2d5016",
+    "navigationBarTitleText": "采薇美容仪器",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#f5f0e8",
+    "backgroundTextStyle": "dark"
+  },
+  "tabBar": {
+    "color": "#999999",
+    "selectedColor": "#2d5016",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "white",
+    "position": "bottom",
+    "iconPosition": "left",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "images/tab-home.svg",
+        "selectedIconPath": "images/tab-home-active.svg"
+      },
+      {
+        "pagePath": "pages/products/products",
+        "text": "产品中心",
+        "iconPath": "images/tab-products.svg",
+        "selectedIconPath": "images/tab-products-active.svg"
+      },
+      {
+        "pagePath": "pages/about/about",
+        "text": "关于我们",
+        "iconPath": "images/tab-about.svg",
+        "selectedIconPath": "images/tab-about-active.svg"
+      },
+      {
+        "pagePath": "pages/contact/contact",
+        "text": "联系我们",
+        "iconPath": "images/tab-contact.svg",
+        "selectedIconPath": "images/tab-contact-active.svg"
+      }
+    ]
+  },
+  "sitemapLocation": "sitemap.json"
+}

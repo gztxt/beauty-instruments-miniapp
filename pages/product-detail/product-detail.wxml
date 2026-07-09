@@ -1,0 +1,103 @@
+<view class="detail-page">
+
+  <!-- ===== 加载状态 ===== -->
+  <view wx:if="{{loading}}" class="skeleton">
+    <view class="skeleton-hero"></view>
+    <view class="skeleton-section" wx:for="{{3}}" wx:key="index">
+      <view class="skeleton-title"></view>
+      <view class="skeleton-block">
+        <view class="skeleton-line w-80"></view>
+        <view class="skeleton-line w-60"></view>
+        <view class="skeleton-line w-40"></view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ===== 产品内容 ===== -->
+  <view wx:elif="{{product.id > 0}}">
+
+    <!-- 产品展示区 -->
+    <view class="product-hero">
+      <view class="hero-bg">
+        <view class="hero-deco-circle c-1"></view>
+        <view class="hero-deco-circle c-2"></view>
+      </view>
+      <view class="hero-content">
+        <view class="hero-icon-wrap">
+          <text class="hero-icon-text">{{product.imgText}}</text>
+        </view>
+        <view class="hero-name">{{product.name}}</view>
+        <view class="hero-model">{{product.model}}</view>
+      </view>
+    </view>
+
+    <!-- 产品简介 -->
+    <view class="container section">
+      <view class="section-title">产品简介</view>
+      <view class="section-divider"></view>
+      <view class="desc-card card">
+        <view class="desc-text">{{product.desc}}</view>
+      </view>
+    </view>
+
+    <!-- 产品参数 -->
+    <view class="container section">
+      <view class="section-title">产品参数</view>
+      <view class="section-divider"></view>
+      <view class="params-card card">
+        <view class="param-item" wx:for="{{product.params}}" wx:key="index">
+          <text class="param-label">{{item.label}}</text>
+          <text class="param-value">{{item.value}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 产品特点 -->
+    <view class="container section">
+      <view class="section-title">产品特点</view>
+      <view class="section-divider"></view>
+      <view class="features-card card">
+        <view class="feature-item" wx:for="{{product.features}}" wx:key="index">
+          <view class="feature-icon-wrap">
+            <text class="feature-icon">{{item.icon}}</text>
+          </view>
+          <view class="feature-info">
+            <view class="feature-title">{{item.title}}</view>
+            <view class="feature-desc">{{item.desc}}</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 适用场景 -->
+    <view class="container section">
+      <view class="section-title">适用场景</view>
+      <view class="section-divider"></view>
+      <view class="scenes-grid">
+        <view class="scene-item card" wx:for="{{product.scenes}}" wx:key="index">
+          <text class="scene-icon">{{item.icon}}</text>
+          <text class="scene-text">{{item.text}}</text>
+        </view>
+      </view>
+    </view>
+
+  </view>
+
+  <!-- ===== 未找到 ===== -->
+  <view wx:else class="not-found">
+    <text class="not-found-icon">🔍</text>
+    <text class="not-found-text">未找到该产品</text>
+    <button class="btn-primary" bindtap="goBack">返回列表</button>
+  </view>
+
+  <!-- ===== 底部操作栏 ===== -->
+  <view class="detail-footer" wx:if="{{product.id > 0}}">
+    <view class="footer-btn footer-inquiry" bindtap="goToContact">
+      <text>立即咨询</text>
+    </view>
+    <view class="footer-btn footer-back" bindtap="goBack">
+      <text>返回列表</text>
+    </view>
+  </view>
+
+</view>

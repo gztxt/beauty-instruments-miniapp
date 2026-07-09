@@ -1,0 +1,33 @@
+const app = getApp();
+
+Page({
+  data: {
+    companyInfo: {},
+    milestones: [
+      { year: '2015', desc: '采薇品牌创立，落户广州番禺，专注于家用美容仪器研发' },
+      { year: '2017', desc: '首款智能皮肤检测仪上市，获天猫美容仪器品类新品销量TOP3' },
+      { year: '2019', desc: '通过ISO 13485质量管理体系认证，生产基地扩至5000㎡' },
+      { year: '2021', desc: '获国家高新技术企业认定，累计专利突破100项' },
+      { year: '2023', desc: '产品远销全球50+国家和地区，服务全球500+企业客户' },
+      { year: '2025', desc: '产品系列突破30个品类，新增射频美容仪、微电流美容仪产品线' }
+    ],
+    certifications: [
+      { name: 'CE认证', short: 'CE' },
+      { name: 'FCC认证', short: 'FCC' },
+      { name: 'RoHS认证', short: 'RoHS' }
+    ]
+  },
+
+  onLoad: function () {
+    this.setData({
+      companyInfo: app.globalData.companyInfo
+    });
+  },
+
+  onShareAppMessage: function () {
+    return {
+      title: '关于我们 — 采薇 · 专业美容仪器品牌',
+      path: '/pages/about/about'
+    };
+  }
+});

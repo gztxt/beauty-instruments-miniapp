@@ -1,0 +1,22 @@
+<view class="banner-sticky-wrap">
+  <swiper class="banner-swiper" indicator-dots="{{false}}" autoplay="{{true}}" interval="{{4500}}" duration="{{600}}" circular="{{true}}" bindchange="onSwiperChange">
+    <swiper-item wx:for="{{banners}}" wx:for-index="i" wx:key="index">
+      <view class="banner-item banner-{{i}}">
+        <view class="banner-bg-deco">
+          <view class="banner-circle circle-1"></view>
+          <view class="banner-circle circle-2"></view>
+          <view class="banner-circle circle-3"></view>
+        </view>
+        <view class="banner-content">
+          <view class="banner-tag">{{item.tag}}</view>
+          <view class="banner-title">{{item.title}}</view>
+          <view class="banner-sub">{{item.sub}}</view>
+          <view class="banner-gold-line"></view>
+        </view>
+      </view>
+    </swiper-item>
+  </swiper>
+  <view class="banner-dots">
+    <view wx:for="{{banners}}" wx:key="index" class="banner-dot {{index === activeSwiper ? 'active' : ''}}"></view>
+  </view>
+</view>
