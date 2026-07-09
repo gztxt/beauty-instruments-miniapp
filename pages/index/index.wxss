@@ -232,8 +232,8 @@
 .img-hot-2 { background: linear-gradient(135deg, #3d6b22, #5a8f3a); }
 .img-hot-3 { background: linear-gradient(135deg, #1e3a0e, #2d5016); }
 .img-hot-4 { background: linear-gradient(135deg, #4a7a2e, #6a9f4a); }
-.img-hot-5 { background: linear-gradient(135deg, #2d5016, #8a6a2e); }
-.img-hot-6 { background: linear-gradient(135deg, #5a3a1e, #c9a84c); }
+.img-hot-5 { background: linear-gradient(135deg, #2D6B5E, #3D8B7A); }
+.img-hot-6 { background: linear-gradient(135deg, #5DAF9A, #E8A87C); }
 
 .hot-badge {
   position: absolute;
@@ -330,8 +330,8 @@
 .img-1 { background: linear-gradient(135deg, #c9a84c, #d4b85a); }
 .img-2 { background: linear-gradient(135deg, #3d6b22, #5a8f3a); }
 .img-3 { background: linear-gradient(135deg, #1e3a0e, #2d5016); }
-.img-4 { background: linear-gradient(135deg, #5a8f3a, #8a6a2e); }
-.img-5 { background: linear-gradient(135deg, #3d6b22, #c9a84c); }
+.img-4 { background: linear-gradient(135deg, #3D8B7A, #5DAF9A); }
+.img-5 { background: linear-gradient(135deg, #2D6B5E, #E8A87C); }
 
 .featured-img::after {
   content: '';
