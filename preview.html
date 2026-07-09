@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>美容仪器 - 企业展示</title>
+<title>采薇美容仪器 - 企业展示</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 :root {
@@ -143,6 +143,62 @@ body {
 .featured-item:active .featured-img { filter: brightness(0.85); }
 .featured-name { font-size: 14px; font-weight: 600; margin-bottom: 2px; padding: 0 0 0 12px; }
 .featured-model { font-size: 12px; color: var(--accent); padding: 0 0 12px 12px; }
+
+/* ===== 快速数据行 ===== */
+.quick-stats {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 20px 16px;
+  background: var(--card-bg);
+  margin: -20px 16px 0;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+  position: relative;
+  z-index: 5;
+}
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.stat-num {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--primary);
+  line-height: 1.2;
+}
+.stat-label {
+  font-size: 12px;
+  color: var(--text-light);
+  white-space: nowrap;
+}
+.stat-divider {
+  width: 1px;
+  height: 28px;
+  background: #e0e8e4;
+}
+
+/* 品牌故事 */
+.brand-story { text-align: center; position: relative; overflow: hidden; padding: 28px 20px; }
+.brand-story::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0;
+  height: 3px; background: linear-gradient(90deg, transparent, var(--accent), transparent);
+}
+.brand-story::after {
+  content: '"'; position: absolute; top: 10px; right: 20px;
+  font-size: 60px; color: rgba(232, 168, 124, 0.1);
+  font-family: Georgia, serif; line-height: 1;
+}
+.story-badge { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 12px; }
+.story-badge-line { width: 24px; height: 1px; background: var(--accent); }
+.story-badge-text { font-size: 11px; color: var(--accent); letter-spacing: 2px; }
+.story-title { font-size: 20px; font-weight: 700; color: var(--primary); margin-bottom: 12px; letter-spacing: 1px; }
+.story-desc { font-size: 14px; color: var(--text-light); line-height: 1.8; margin-bottom: 16px; }
+.story-highlight { display: flex; flex-direction: column; gap: 6px; align-items: center; }
+.hl-item { font-size: 13px; color: #555; }
+.hl-icon { color: var(--accent); margin-right: 4px; }
 
 /* ===== 底部 CTA ===== */
 .cta-section {
@@ -386,41 +442,43 @@ body {
 <script>
 // ================= 数据 =================
 const companyInfo = {
-  name: '深圳市XX美容仪器科技有限公司',
-  address: '广东省深圳市宝安区XX科技园A栋',
-  phone: '0755-88888888',
-  email: 'contact@beauty-instruments.com'
+  name: '广州采薇美容仪器有限公司',
+  address: '广州市番禺区石碁镇XX工业园XX栋',
+  phone: '020-XXXXXXXX',
+  email: 'info@caiwei-beauty.com'
 };
 
 const products = {
   0: [
     { id: 1, name: '多功能美容仪', model: 'BI-BM200', desc: '集清洁、导入、提拉、冷敷于一体的多功能美容仪器，满足日常护肤全流程需求。' },
-    { id: 2, name: '射频紧肤仪', model: 'BI-RF400', desc: '采用多极射频技术，深入真皮层刺激胶原蛋白再生，有效紧致肌肤、淡化皱纹。' },
-    { id: 3, name: '光子嫩肤仪', model: 'BI-IPL500', desc: '强脉冲光技术，改善肤色不均、红血丝、毛孔粗大等问题，焕亮肌肤。' },
-    { id: 4, name: '超声波导入仪', model: 'BI-US600', desc: '高频超声波振动，促进护肤品有效成分深层渗透，提升护肤效果。' },
-    { id: 5, name: '微电流提拉仪', model: 'BI-MC700', desc: '微电流刺激肌肉层，即时提拉紧致，塑造面部轮廓线条。' }
+    { id: 2, name: '射频美容仪', model: 'BI-RF300', desc: '采用多极射频技术，深层加热真皮层，刺激胶原蛋白再生，紧致肌肤轮廓。' },
+    { id: 3, name: '射频紧肤仪', model: 'BI-RF400', desc: '采用多极射频技术，深入真皮层刺激胶原蛋白再生，有效紧致肌肤、淡化皱纹。' },
+    { id: 4, name: '光子嫩肤仪', model: 'BI-IPL500', desc: '强脉冲光技术，改善肤色不均、红血丝、毛孔粗大等问题，焕亮肌肤。' },
+    { id: 5, name: '超声波导入仪', model: 'BI-US600', desc: '高频超声波振动，促进护肤品有效成分深层渗透，提升护肤效果。' },
+    { id: 6, name: '微电流提拉仪', model: 'BI-MC700', desc: '微电流刺激肌肉层，即时提拉紧致，塑造面部轮廓线条。' },
+    { id: 7, name: '微电流美容仪', model: 'BI-MS100', desc: '微电流刺激面部肌肉提升紧致，配合导入功能增强护肤品吸收。' }
   ],
   1: [
-    { id: 6, name: '智能皮肤分析仪', model: 'BI-SK100', desc: 'AI智能识别，多维分析肌肤水分、油分、弹性、色素等指标。' },
-    { id: 7, name: '专业皮肤镜', model: 'BI-SK200', desc: '高清放大成像，深层观测皮肤纹理、毛孔、斑点和炎症情况。' },
-    { id: 8, name: '皮肤水分测试仪', model: 'BI-SK300', desc: '精密传感器，快速准确测量皮肤角质层含水量。' },
-    { id: 9, name: '肤色检测仪', model: 'BI-SK400', desc: '专业肤色分析，提供精准的肤色数据和美白护理建议。' }
+    { id: 8, name: '智能皮肤分析仪', model: 'BI-SK100', desc: 'AI智能识别，多维分析肌肤水分、油分、弹性、色素等指标。' },
+    { id: 9, name: '专业皮肤镜', model: 'BI-SK200', desc: '高清放大成像，深层观测皮肤纹理、毛孔、斑点和炎症情况。' },
+    { id: 10, name: '皮肤水分测试仪', model: 'BI-SK300', desc: '精密传感器，快速准确测量皮肤角质层含水量。' },
+    { id: 11, name: '肤色检测仪', model: 'BI-SK400', desc: '专业肤色分析，提供精准的肤色数据和美白护理建议。' }
   ],
   2: [
-    { id: 10, name: '深层洁面仪', model: 'BI-CL300', desc: '声波震动技术，深入清洁毛孔，去除油脂和化妆品残留。' },
-    { id: 11, name: '黑头导出仪', model: 'BI-CL500', desc: '真空吸附技术，温和导出黑头粉刺，不伤肌肤。' },
-    { id: 12, name: '冷热喷雾仪', model: 'BI-CL600', desc: '纳米级喷雾粒子，热敷打开毛孔，冷敷收缩紧致。' },
-    { id: 13, name: '去角质焕肤仪', model: 'BI-CL700', desc: '旋转刷头配合专用刷毛，温和去除老化角质，促进新陈代谢。' }
+    { id: 12, name: '深层洁面仪', model: 'BI-CL300', desc: '声波震动技术，深入清洁毛孔，去除油脂和化妆品残留。' },
+    { id: 13, name: '黑头导出仪', model: 'BI-CL500', desc: '真空吸附技术，温和导出黑头粉刺，不伤肌肤。' },
+    { id: 14, name: '冷热喷雾仪', model: 'BI-CL600', desc: '纳米级喷雾粒子，热敷打开毛孔，冷敷收缩紧致。' },
+    { id: 15, name: '去角质焕肤仪', model: 'BI-CL700', desc: '旋转刷头配合专用刷毛，温和去除老化角质，促进新陈代谢。' }
   ]
 };
 
 const milestones = [
-  { year: '2015', desc: '公司成立，专注美容仪器研发' },
-  { year: '2017', desc: '首款智能皮肤检测仪上市，获市场好评' },
-  { year: '2019', desc: '通过ISO9001认证，建立万级无尘车间' },
-  { year: '2021', desc: '产品出口欧美，年营收突破5000万' },
-  { year: '2023', desc: '获国家高新技术企业认定，专利突破50项' },
-  { year: '2025', desc: '与全球30+品牌建立战略合作' }
+  { year: '2015', desc: '采薇品牌创立，落户广州番禺，专注于家用美容仪器研发' },
+  { year: '2017', desc: '首款智能皮肤检测仪上市，获天猫美容仪器品类新品销量TOP3' },
+  { year: '2019', desc: '通过ISO 13485质量管理体系认证，生产基地扩至5000㎡' },
+  { year: '2021', desc: '获国家高新技术企业认定，累计专利突破100项' },
+  { year: '2023', desc: '产品远销全球50+国家和地区，服务全球500+企业客户' },
+  { year: '2025', desc: '产品系列突破30个品类，新增射频美容仪、微电流美容仪产品线' }
 ];
 
 const certifications = [
@@ -442,10 +500,10 @@ function renderHome() {
     <div class="swiper-wrap">
       <div class="banner" id="banner">
         ${[
-          {tag:'BRAND',title:'高端美容仪器制造商',sub:'自主研发 · 精密制造 · 全球服务'},
-          {tag:'R&D',title:'自主研发 · 技术创新',sub:'30+人研发团队 · 50+专利技术'},
+          {tag:'BRAND',title:'采薇 · 高端美容仪器品牌',sub:'自主研发 · 精密制造 · 全球服务'},
+          {tag:'R&D',title:'采薇 · 技术创新驱动',sub:'30+产品系列 · 100+专利技术'},
           {tag:'QUALITY',title:'品质认证 · 全球信赖',sub:'CE、FCC、RoHS · ISO9001认证'},
-          {tag:'SERVICE',title:'科技守护美丽',sub:'OEM/ODM · 品牌定制 · 全球服务'}
+          {tag:'SERVICE',title:'采薇 · 科技守护美丽',sub:'OEM/ODM · 品牌定制 · 全球服务'}
         ].map(s => `
           <div class="banner-slide">
             <div class="banner-bg-deco">
@@ -469,23 +527,23 @@ function renderHome() {
 
     <div class="quick-stats">
       <div class="stat-item">
+        <span class="stat-num">30+</span>
+        <span class="stat-label">产品系列</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
         <span class="stat-num">50+</span>
+        <span class="stat-label">合作客户</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <span class="stat-num">100+</span>
         <span class="stat-label">专利技术</span>
       </div>
       <div class="stat-divider"></div>
       <div class="stat-item">
-        <span class="stat-num">30+</span>
-        <span class="stat-label">研发团队</span>
-      </div>
-      <div class="stat-divider"></div>
-      <div class="stat-item">
-        <span class="stat-num">30+</span>
-        <span class="stat-label">出口国家</span>
-      </div>
-      <div class="stat-divider"></div>
-      <div class="stat-item">
-        <span class="stat-num">1</span>
-        <span class="stat-label">高端制造</span>
+        <span class="stat-num">24/7</span>
+        <span class="stat-label">售后支持</span>
       </div>
     </div>
 
@@ -496,11 +554,11 @@ function renderHome() {
           <span class="story-badge-text">BRAND STORY</span>
           <span class="story-badge-line"></span>
         </div>
-        <div class="story-title">专业美容仪器制造商</div>
-        <div class="story-desc">我们是一家集研发、生产、销售于一体的美容仪器开发生产厂家。依托强大的技术团队和精密制造能力，为全球客户提供高品质的美容仪器解决方案。</div>
+        <div class="story-title">采薇 · 专业美容仪器品牌</div>
+        <div class="story-desc">采薇品牌集研发、生产、销售于一体，以30+产品系列和100+专利技术，为全球客户提供高品质的美容仪器解决方案。</div>
         <div class="story-highlight">
-          <span class="hl-item"><span class="hl-icon">◇</span>从皮肤检测到护理仪器</span>
-          <span class="hl-item"><span class="hl-icon">◇</span>用科技守护美丽事业</span>
+          <span class="hl-item"><span class="hl-icon">◇</span>从皮肤检测到射频护理，全品类覆盖</span>
+          <span class="hl-item"><span class="hl-icon">◇</span>采薇科技，守护您的美丽</span>
         </div>
       </div>
     </div>
@@ -512,12 +570,12 @@ function renderHome() {
         <div class="card advantage-item">
           <div class="adv-icon-wrap"><span class="adv-icon">🔬</span></div>
           <div class="adv-title">自主研发</div>
-          <div class="adv-desc">30+人研发团队，持续技术创新，50+专利技术</div>
+          <div class="adv-desc">100+专利技术，持续产品创新</div>
         </div>
         <div class="card advantage-item">
           <div class="adv-icon-wrap"><span class="adv-icon">⚙️</span></div>
-          <div class="adv-title">精密制造</div>
-          <div class="adv-desc">万级无尘车间，ISO质量管理体系，5000㎡生产基地</div>
+          <div class="adv-title">产品丰富</div>
+          <div class="adv-desc">30+产品系列，覆盖全品类美容仪器</div>
         </div>
         <div class="card advantage-item">
           <div class="adv-icon-wrap"><span class="adv-icon">🏆</span></div>
@@ -532,10 +590,12 @@ function renderHome() {
       <div class="section-divider"></div>
       <div class="featured-grid">
         ${[
-          {name:'智能皮肤检测仪',model:'BI-SK100',cls:'fi-0'},
-          {name:'多功能美容仪',model:'BI-BM200',cls:'fi-1'},
-          {name:'深层清洁仪',model:'BI-CL300',cls:'fi-2'},
-          {name:'射频紧肤仪',model:'BI-RF400',cls:'fi-3'}
+          {name:'射频美容仪',model:'BI-RF300',cls:'fi-0'},
+          {name:'射频紧肤仪',model:'BI-RF400',cls:'fi-1'},
+          {name:'微电流美容仪',model:'BI-MS100',cls:'fi-2'},
+          {name:'多功能美容仪',model:'BI-BM200',cls:'fi-3'},
+          {name:'智能皮肤分析仪',model:'BI-SK100',cls:'fi-4'},
+          {name:'深层洁面仪',model:'BI-CL300',cls:'fi-5'}
         ].map(p => `
           <div class="card featured-item" onclick="showToast('查看完整产品列表请切换到产品中心')">
             <div class="featured-img ${p.cls}">${p.name}</div>
@@ -643,8 +703,9 @@ function renderAbout() {
     <div class="container section">
       <div class="card">
         <div class="desc-title">公司简介</div>
-        <div class="desc-text">我们是一家专注于美容仪器研发、生产和销售的高新技术企业。公司成立于2015年，总部位于深圳，拥有占地面积5000平方米的现代化生产基地。</div>
-        <div class="desc-text">公司汇聚了光学、电子、生物学等多领域专业人才，建立了30余人的研发团队，累计获得50余项专利技术。我们的产品远销欧美、东南亚等30多个国家和地区，与众多知名美容品牌建立了长期合作关系。</div>
+        <div class="desc-text">广州采薇美容仪器有限公司成立于2015年，总部位于广州番禺，是一家集美容仪器研发、生产、销售为一体的科技型企业。公司拥有5000平方米的现代化生产基地，配备万级无尘车间和自动化装配线。</div>
+        <div class="desc-text">采薇品牌拥有30+产品系列、100+专利技术，产品覆盖皮肤检测、射频紧致、光子嫩肤、超声波清洁、微电流护理等全品类，通过CE、FCC、RoHS等国际认证。</div>
+        <div class="desc-text">目前产品远销欧美、东南亚、中东等50多个国家和地区，服务全球超过500家企业客户，为全球消费者提供专业的美容仪器解决方案。</div>
         <div class="desc-text">我们始终坚持以技术创新为驱动，以品质为生命，致力于为全球客户提供安全、高效、专业的美容仪器解决方案。</div>
       </div>
     </div>
