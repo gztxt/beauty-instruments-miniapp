@@ -7,15 +7,15 @@
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 :root {
-  --primary: #3D8B7A;
-  --primary-light: #5DAF9A;
-  --primary-dark: #2D6B5E;
-  --accent: #E8A87C;
-  --accent-light: #F0C4A0;
+  --primary: #2d5016;
+  --primary-light: #3a6b1e;
+  --primary-dark: #1e3a0e;
+  --accent: #c9a84c;
+  --accent-light: #d4b85a;
   --bg: #F7F8F5;
   --card-bg: #ffffff;
   --text: #2C3E2D;
-  --text-light: #7A8A7A;
+  --text-light: #999999;
   --radius: 12px;
 }
 body {
@@ -34,7 +34,7 @@ body {
   top: 0;
   z-index: 99;
   overflow: hidden;
-  background: #EEF1EC;
+  background: #f5f0e8;
   margin: 0 16px;
   border-radius: 16px;
 }
@@ -66,10 +66,10 @@ body {
   font-weight: 700;
   letter-spacing: 2px;
 }
-.banner-slide:nth-child(1) { background: linear-gradient(135deg, #3D8B7A, #5DAF9A); }
-.banner-slide:nth-child(2) { background: linear-gradient(135deg, #2D6B5E, #4A9F8A); }
-.banner-slide:nth-child(3) { background: linear-gradient(135deg, #4A9F8A, #6BBFAA); }
-.banner-slide:nth-child(4) { background: linear-gradient(135deg, #3D8B7A, #7ACFBA); }
+.banner-slide:nth-child(1) { background: linear-gradient(135deg, #2d5016, #3a6b1e); }
+.banner-slide:nth-child(2) { background: linear-gradient(135deg, #1e3a0e, #2d5016); }
+.banner-slide:nth-child(3) { background: linear-gradient(135deg, #2d5016, #3a6b1e); }
+.banner-slide:nth-child(4) { background: linear-gradient(135deg, #2d5016, #4a7a2e); }
 @keyframes breathe {
   0%, 100% { filter: brightness(1); }
   50% { filter: brightness(1.12); }
@@ -133,7 +133,7 @@ body {
 .featured-item:active { transform: scale(0.96); }
 .featured-img {
   width: 100%; height: 100px;
-  background: linear-gradient(135deg, #E8F0EC, #D0E8DD);
+  background: linear-gradient(135deg, #f5f0e8, #e8e0d4);
   display: flex; align-items: center; justify-content: center;
   border-radius: 8px; margin-bottom: 8px;
   font-size: 13px; color: var(--primary-light);
@@ -177,7 +177,7 @@ body {
 .stat-divider {
   width: 1px;
   height: 28px;
-  background: #e0e8e4;
+  background: #e8e0d4;
 }
 
 /* 品牌故事 */
@@ -188,7 +188,7 @@ body {
 }
 .brand-story::after {
   content: '"'; position: absolute; top: 10px; right: 20px;
-  font-size: 60px; color: rgba(232, 168, 124, 0.1);
+  font-size: 60px; color: rgba(201, 168, 76,  0.1;
   font-family: Georgia, serif; line-height: 1;
 }
 .story-badge { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 12px; }
@@ -203,7 +203,7 @@ body {
 /* ===== 底部 CTA ===== */
 .cta-section {
   margin: 20px 16px;
-  background: linear-gradient(135deg, #2D6B5E 0%, #3D8B7A 50%, #4A9F8A 100%);
+  background: linear-gradient(135deg, #1e3a0e 0%, #2d5016 50%, #2d5016 100%);
   border-radius: 16px;
   padding: 32px 24px;
   text-align: center;
@@ -234,9 +234,9 @@ body {
   background: var(--accent); color: white; border: none;
   padding: 10px 32px; border-radius: 24px; font-size: 15px;
   font-weight: 600; cursor: pointer; transition: all 0.3s;
-  box-shadow: 0 4px 12px rgba(232, 168, 124, 0.35);
+  box-shadow: 0 4px 12px rgba(201, 168, 76,  0.35;
 }
-.btn-gold:hover { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 6px 16px rgba(232, 168, 124, 0.45); }
+.btn-gold:hover { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 6px 16px rgba(201, 168, 76,  0.45; }
 
 /* Tab Bar */
 .tabbar {
@@ -253,7 +253,7 @@ body {
 .tab-item {
   flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
   gap: 3px; padding: 6px 4px;
-  font-size: 11px; color: #9AA6A0; cursor: pointer; transition: color 0.3s; position: relative;
+  font-size: 11px; color: #999999; cursor: pointer; transition: color 0.3s; position: relative;
 }
 .tab-item .tab-icon { display: flex; align-items: center; justify-content: center; transition: transform 0.3s; }
 .tab-item:active .tab-icon { transform: scale(0.88); }
@@ -272,7 +272,7 @@ body {
   color: white; font-size: 20px; font-weight: 700; letter-spacing: 2px;
 }
 .tab-bar {
-  display: flex; background: white; border-bottom: 1px solid #E5E8E5;
+  display: flex; background: white; border-bottom: 1px solid #e8e0d4;
   position: sticky; top: 180px; z-index: 50;
   margin: 0 16px; border-radius: 12px 12px 0 0;
   box-shadow: 0 2px 8px rgba(0,0,0,0.04);
@@ -291,7 +291,7 @@ body {
 .product-item:active .product-img { filter: brightness(0.85); }
 .product-img {
   width: 100px; height: 100px; flex-shrink: 0;
-  background: linear-gradient(135deg, #E8F0EC, #D0E8DD);
+  background: linear-gradient(135deg, #f5f0e8, #e8e0d4);
   display: flex; align-items: center; justify-content: center;
   border-radius: 8px; font-size: 12px; color: var(--primary-light);
   transition: filter 0.25s ease;
@@ -304,7 +304,7 @@ body {
 /* 关于页 */
 .hero-section {
   height: 160px;
-  background: linear-gradient(135deg, #2D6B5E, var(--primary));
+  background: linear-gradient(135deg, #1e3a0e, var(--primary));
   display: flex; align-items: center; justify-content: center;
   color: white; font-size: 28px; font-weight: 700; letter-spacing: 4px;
 }
@@ -316,7 +316,7 @@ body {
 .timeline { position: relative; padding-left: 20px; }
 .timeline::before {
   content: ''; position: absolute; left: 8px; top: 0; bottom: 0;
-  width: 2px; background: #D0D8D0;
+  width: 2px; background: #e8e0d4;
 }
 .timeline-item { position: relative; padding-bottom: 20px; }
 .timeline-dot {
@@ -334,7 +334,7 @@ body {
 .cert-item:active { transform: scale(0.96); }
 .cert-img {
   width: 64px; height: 64px; border-radius: 50%; margin: 0 auto 8px;
-  background: linear-gradient(135deg, #E8F0EC, rgba(232, 168, 124, 0.2));
+  background: linear-gradient(135deg, #f5f0e8, rgba(201, 168, 76,  0.2);
   display: flex; align-items: center; justify-content: center;
   font-size: 10px; color: var(--primary-light);
   transition: filter 0.25s ease;
@@ -349,7 +349,7 @@ body {
 .factory-item:active { transform: scale(0.96); }
 .factory-img {
   height: 120px;
-  background: linear-gradient(135deg, #E8F0EC, #D0E8DD);
+  background: linear-gradient(135deg, #f5f0e8, #e8e0d4);
   display: flex; align-items: center; justify-content: center;
   border-radius: 8px; font-size: 13px; color: var(--primary-light);
   transition: filter 0.25s ease;
@@ -369,7 +369,7 @@ body {
   background: white; color: var(--primary); font-size: 14px;
   cursor: pointer; transition: background 0.3s;
 }
-.action-btn:hover { background: #EEF4F0; }
+.action-btn:hover { background: #f5f0e8; }
 
 /* 表单 */
 .form-group { margin-bottom: 16px; }
@@ -379,23 +379,23 @@ body {
   font-size: 14px; outline: none; transition: border-color 0.3s;
   box-sizing: border-box;
 }
-.form-input:focus, .form-textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(61, 139, 122, 0.12); }
+.form-input:focus, .form-textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(45, 80, 22,  0.12; }
 .form-textarea { height: 100px; resize: none; }
-.char-count { display: block; text-align: right; font-size: 12px; color: #B0BAB4; margin-top: 4px; }
+.char-count { display: block; text-align: right; font-size: 12px; color: #999999; margin-top: 4px; }
 .submit-btn { width: 100%; margin-top: 8px; }
 .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* 地图占位 */
 .map-placeholder {
   height: 180px;
-  background: linear-gradient(135deg, #E8F0EC, #D0E8DD);
+  background: linear-gradient(135deg, #f5f0e8, #e8e0d4);
   display: flex; align-items: center; justify-content: center;
   border-radius: var(--radius); font-size: 16px; color: var(--primary-light);
 }
 
 /* 底部 */
 .footer {
-  text-align: center; padding: 20px; font-size: 12px; color: #B0BAB4;
+  text-align: center; padding: 20px; font-size: 12px; color: #999999;
 }
 
 /* 弹窗 */
@@ -485,9 +485,9 @@ const milestones = [
 ];
 
 const certifications = [
-  { name: 'ISO9001', desc: '质量管理体系认证' },
   { name: 'CE', desc: '欧盟安全认证' },
-  { name: 'FCC', desc: '美国FCC认证' }
+  { name: 'FCC', desc: '美国FCC认证' },
+  { name: 'RoHS', desc: '欧盟环保认证' }
 ];
 
 const factoryImages = [
@@ -535,7 +535,7 @@ function renderHome() {
       </div>
       <div class="stat-divider"></div>
       <div class="stat-item">
-        <span class="stat-num">50+</span>
+        <span class="stat-num">30+</span>
         <span class="stat-label">合作客户</span>
       </div>
       <div class="stat-divider"></div>
@@ -583,7 +583,7 @@ function renderHome() {
         <div class="card advantage-item">
           <div class="adv-icon-wrap"><span class="adv-icon">🏆</span></div>
           <div class="adv-title">品质认证</div>
-          <div class="adv-desc">CE、FCC、RoHS等国际认证齐全，产品远销30+国家</div>
+          <div class="adv-desc">CE、FCC、RoHS等国际认证齐全，产品远销50+国家</div>
         </div>
       </div>
     </div>

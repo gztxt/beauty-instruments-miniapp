@@ -1,3 +1,5 @@
+const { findProductById } = require('../../data/products');
+
 Page({
   data: {
     activeSwiper: 0,
@@ -12,23 +14,8 @@ Page({
       { icon: '⚙️', title: '产品丰富', desc: '30+产品系列，覆盖全品类美容仪器' },
       { icon: '🏆', title: '品质认证', desc: 'CE、FCC、RoHS等国际认证齐全' }
     ],
-    hotProducts: [
-      { id: 2, name: '射频美容仪', model: 'BI-RF300', imgText: '多极射频', tag: '新品' },
-      { id: 3, name: '射频紧肤仪', model: 'BI-RF400', imgText: '院线级', tag: '热销' },
-      { id: 8, name: '智能皮肤分析仪', model: 'BI-SK100', imgText: 'AI分析', tag: '人气' },
-      { id: 1, name: '多功能美容仪', model: 'BI-BM200', imgText: '7合1护理', tag: '爆款' },
-      { id: 12, name: '深层洁面仪', model: 'BI-CL300', imgText: '声波清洁', tag: '热销' },
-      { id: 4, name: '光子嫩肤仪', model: 'BI-IPL500', imgText: '强脉冲光', tag: '人气' },
-      { id: 7, name: '微电流美容仪', model: 'BI-MS100', imgText: '微电流', tag: '新品' }
-    ],
-    featuredProducts: [
-      { id: 2, name: '射频美容仪', model: 'BI-RF300', imgText: '多极射频' },
-      { id: 3, name: '射频紧肤仪', model: 'BI-RF400', imgText: '院线射频' },
-      { id: 7, name: '微电流美容仪', model: 'BI-MS100', imgText: '微电流提拉' },
-      { id: 1, name: '多功能美容仪', model: 'BI-BM200', imgText: '7合1护理' },
-      { id: 8, name: '智能皮肤分析仪', model: 'BI-SK100', imgText: 'AI皮肤分析' },
-      { id: 12, name: '深层洁面仪', model: 'BI-CL300', imgText: '声波清洁' }
-    ],
+    hotProducts: [],
+    featuredProducts: [],
     hotScrollLeft: 0,
     hotScrollMax: 0,
     hotThumbLeft: 0,
@@ -38,11 +25,22 @@ Page({
 
   onLoad: function () {
     const that = this;
+    const build = (ids, tagMap) => ids.map(id => {
+      const p = findProductById(id);
+      return p ? Object.assign({ tag: tagMap[id] || '' }, p) : null;
+    }).filter(Boolean);
+
+    this.setData({
+      hotProducts: build([2, 3, 8, 1, 12, 4, 7], { 2: '新品', 3: '热销', 8: '人气', 1: '爆款', 12: '热销', 4: '人气', 7: '新品' }),
+      featuredProducts: build([2, 3, 7, 1, 8, 12])
+    });
+
     wx.createSelectorQuery()
       .select('.hot-scroll')
       .fields({ scrollOffset: true, size: true }, function (res) {
         if (res) {
-          that.setData({ hotScrollMax: res.scrollWidth || 0 });
+          const maxScroll = Math.max(0, (res.scrollWidth || 0) - (res.clientWidth || 0));
+          that.setData({ hotScrollMax: maxScroll });
         }
       })
       .exec();

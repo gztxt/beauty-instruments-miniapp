@@ -64,7 +64,7 @@
     <view class="section-title">发展历程</view>
     <view class="section-divider"></view>
     <view class="timeline">
-      <view class="timeline-item" wx:for="{{milestones}}" wx:key="index">
+      <view class="timeline-item" wx:for="{{milestones}}" wx:key="year">
         <view class="timeline-dot {{index === 0 ? 'first' : ''}}"></view>
         <view class="timeline-wrap {{index % 2 === 0 ? 'tl-left' : 'tl-right'}}">
           <view class="timeline-content card">
@@ -81,7 +81,7 @@
     <view class="section-title">资质认证</view>
     <view class="section-divider"></view>
     <view class="certs-grid">
-      <view class="cert-item card" wx:for="{{certifications}}" wx:key="index">
+      <view class="cert-item card" wx:for="{{certifications}}" wx:key="short">
         <view class="cert-icon-bg">
           <text class="cert-icon-text">{{item.short}}</text>
         </view>

@@ -25,10 +25,10 @@
   justify-content: center;
 }
 
-.banner-0 { background: linear-gradient(135deg, #3D8B7A 0%, #5DAF9A 40%, #6BBFAA 100%); }
-.banner-1 { background: linear-gradient(135deg, #2D6B5E 0%, #3D8B7A 40%, #4A9F8A 100%); }
-.banner-2 { background: linear-gradient(135deg, #2D6B5E 0%, #4A9F8A 40%, #5DAF9A 100%); }
-.banner-3 { background: linear-gradient(135deg, #3D8B7A 0%, #5DAF9A 40%, #7ACFBA 100%); }
+.banner-0 { background: linear-gradient(135deg, #2d5016 0%, #3a6b1e 40%, #3a6b1e 100%); }
+.banner-1 { background: linear-gradient(135deg, #1e3a0e 0%, #2d5016 40%, #2d5016 100%); }
+.banner-2 { background: linear-gradient(135deg, #1e3a0e 0%, #2d5016 40%, #3a6b1e 100%); }
+.banner-3 { background: linear-gradient(135deg, #2d5016 0%, #3a6b1e 40%, #4a7a2e 100%); }
 
 .banner-bg-deco {
   position: absolute;
@@ -39,7 +39,7 @@
 .banner-circle {
   position: absolute;
   border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1rpx solid rgba(255, 255, 255, 0.08);
 }
 
 .circle-1 {
@@ -55,7 +55,7 @@
   height: 200rpx;
   bottom: -40rpx;
   left: -50rpx;
-  border-color: rgba(232, 168, 124, 0.15);
+  border-color: rgba(201, 168, 76,  0.15;
   border-width: 1rpx;
 }
 
@@ -79,7 +79,7 @@
 .banner-tag {
   display: inline-block;
   font-size: 20rpx;
-  color: #E8A87C;
+  color: #c9a84c;
   letter-spacing: 4rpx;
   padding: 6rpx 20rpx;
   border: 1rpx solid rgba(201, 168, 76, 0.4);
@@ -106,7 +106,7 @@
 .banner-gold-line {
   width: 48rpx;
   height: 3rpx;
-  background: #E8A87C;
+  background: #c9a84c;
   margin: 0 auto;
   border-radius: 2rpx;
 }
@@ -132,5 +132,5 @@
 .banner-dot.active {
   width: 36rpx;
   border-radius: 4rpx;
-  background: linear-gradient(90deg, #E8A87C, #F0C4A0);
+  background: linear-gradient(90deg, #c9a84c, #d4b85a);
 }

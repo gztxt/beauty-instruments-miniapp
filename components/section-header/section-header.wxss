@@ -6,7 +6,7 @@
 .section-title {
   font-size: 34rpx;
   font-weight: 700;
-  color: #3D8B7A;
+  color: #2d5016;
   margin-bottom: 12rpx;
   letter-spacing: 1rpx;
 }
@@ -14,7 +14,7 @@
 .section-line {
   width: 50rpx;
   height: 3rpx;
-  background: linear-gradient(90deg, #3D8B7A, #E8A87C);
+  background: linear-gradient(90deg, #2d5016, #c9a84c);
   margin: 0 auto;
   border-radius: 2rpx;
 }

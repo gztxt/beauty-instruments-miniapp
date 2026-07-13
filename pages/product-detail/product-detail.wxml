@@ -45,7 +45,7 @@
       <view class="section-title">产品参数</view>
       <view class="section-divider"></view>
       <view class="params-card card">
-        <view class="param-item" wx:for="{{product.params}}" wx:key="index">
+        <view class="param-item" wx:for="{{product.params}}" wx:key="label">
           <text class="param-label">{{item.label}}</text>
           <text class="param-value">{{item.value}}</text>
         </view>
@@ -57,7 +57,7 @@
       <view class="section-title">产品特点</view>
       <view class="section-divider"></view>
       <view class="features-card card">
-        <view class="feature-item" wx:for="{{product.features}}" wx:key="index">
+        <view class="feature-item" wx:for="{{product.features}}" wx:key="title">
           <view class="feature-icon-wrap">
             <text class="feature-icon">{{item.icon}}</text>
           </view>
@@ -74,7 +74,7 @@
       <view class="section-title">适用场景</view>
       <view class="section-divider"></view>
       <view class="scenes-grid">
-        <view class="scene-item card" wx:for="{{product.scenes}}" wx:key="index">
+        <view class="scene-item card" wx:for="{{product.scenes}}" wx:key="text">
           <text class="scene-icon">{{item.icon}}</text>
           <text class="scene-text">{{item.text}}</text>
         </view>

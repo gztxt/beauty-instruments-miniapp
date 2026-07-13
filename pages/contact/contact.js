@@ -42,8 +42,13 @@ Page({
 
   checkForm: function () {
     const { name, phone, message } = this.data.formData;
-    const valid = name.trim() !== '' && phone.trim() !== '' && message.trim() !== '';
+    const valid = name.trim() !== '' && this.isPhoneValid(phone) && message.trim() !== '';
     this.setData({ canSubmit: valid });
+  },
+
+  /** 校验手机号（中国大陆 11 位，1 开头）*/
+  isPhoneValid: function (phone) {
+    return /^1\d{10}$/.test((phone || '').trim());
   },
 
   makeCall: function () {
@@ -65,8 +70,12 @@ Page({
     const { name, phone, message } = this.data.formData;
 
     // 前端校验
-    if (!name.trim() || !phone.trim() || !message.trim()) {
+    if (!name.trim() || !message.trim()) {
       wx.showToast({ title: '请填写完整信息', icon: 'none' });
+      return;
+    }
+    if (!this.isPhoneValid(phone)) {
+      wx.showToast({ title: '请输入正确的手机号', icon: 'none' });
       return;
     }
 

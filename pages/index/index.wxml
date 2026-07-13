@@ -56,7 +56,7 @@
   <view class="container section">
     <section-header title="核心优势" />
     <view class="advantages-grid">
-      <view class="advantage-item card" wx:for="{{advantages}}" wx:key="index">
+      <view class="advantage-item card" wx:for="{{advantages}}" wx:key="title">
         <view class="adv-icon-wrap">
           <text class="adv-icon">{{item.icon}}</text>
         </view>
@@ -71,7 +71,7 @@
     <section-header title="热销推荐" />
     <scroll-view class="hot-scroll" scroll-x enhanced show-scrollbar="{{false}}" bindscroll="onHotScroll">
       <view class="hot-track">
-        <view class="hot-item card" wx:for="{{hotProducts}}" wx:key="index" data-id="{{item.id}}" bindtap="goToProductDetail">
+        <view class="hot-item card" wx:for="{{hotProducts}}" wx:key="id" data-id="{{item.id}}" bindtap="goToProductDetail">
           <view class="hot-img-wrap">
             <view class="hot-img img-hot-{{index}}">
               <text>{{item.imgText}}</text>
@@ -95,7 +95,7 @@
   <view class="container section">
     <section-header title="主打产品" />
     <view class="featured-grid">
-      <view class="featured-item card" wx:for="{{featuredProducts}}" wx:key="index" data-id="{{item.id}}" bindtap="goToProductDetail">
+      <view class="featured-item card" wx:for="{{featuredProducts}}" wx:key="id" data-id="{{item.id}}" bindtap="goToProductDetail">
         <view class="featured-img img-{{index}}">
           <text>{{item.imgText}}</text>
         </view>

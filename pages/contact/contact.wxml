@@ -10,7 +10,7 @@
     <view class="info-card card">
       <view class="info-item">
         <view class="info-icon">
-          <image src="/images/icon-company.svg" mode="aspectFit" />
+          <image src="/images/icon-company.png" mode="aspectFit" />
         </view>
         <view class="info-content">
           <text class="info-label">公司名称</text>
@@ -19,7 +19,7 @@
       </view>
       <view class="info-item">
         <view class="info-icon">
-          <image src="/images/icon-address.svg" mode="aspectFit" />
+          <image src="/images/icon-address.png" mode="aspectFit" />
         </view>
         <view class="info-content">
           <text class="info-label">公司地址</text>
@@ -28,7 +28,7 @@
       </view>
       <view class="info-item">
         <view class="info-icon">
-          <image src="/images/icon-phone.svg" mode="aspectFit" />
+          <image src="/images/icon-phone.png" mode="aspectFit" />
         </view>
         <view class="info-content">
           <text class="info-label">联系电话</text>
@@ -37,7 +37,7 @@
       </view>
       <view class="info-item">
         <view class="info-icon">
-          <image src="/images/icon-email.svg" mode="aspectFit" />
+          <image src="/images/icon-email.png" mode="aspectFit" />
         </view>
         <view class="info-content">
           <text class="info-label">电子邮箱</text>
@@ -49,11 +49,11 @@
     <!-- 快捷操作 -->
     <view class="action-btns">
       <button class="action-btn btn-primary" bindtap="makeCall">
-        <image src="/images/icon-phone.svg" class="btn-icon" mode="aspectFit" />
+        <image src="/images/icon-phone.png" class="btn-icon" mode="aspectFit" />
         <text>一键拨号</text>
       </button>
       <button class="action-btn btn-primary" bindtap="copyAddress">
-        <image src="/images/icon-copy.svg" class="btn-icon" mode="aspectFit" />
+        <image src="/images/icon-copy.png" class="btn-icon" mode="aspectFit" />
         <text>复制地址</text>
       </button>
     </view>

@@ -65,3 +65,26 @@ beauty-instruments-miniapp/
 ### 代码简化
 - ✅ **统一表单输入** — 3 个独立 handler 合并为通用的 `onFieldInput`
 - ✅ **动态 Tab** — products 页分类列表使用循环渲染，替代手动 3 个 tab
+
+## v3.0 优化内容
+
+### 兼容性修复
+- ✅ **SVG → PNG** — 微信 tabBar 图标与 `<image>` 不支持 SVG，已将 `images/` 下全部 12 个 Tab 图标 + 4 个联系页图标栅格化为 PNG（`.rasterize_icons.py`），`app.json` 与 `contact.wxml` 已指向 PNG。原始 SVG 保留为源。
+- ✅ **废弃 API** — `app.js` 的 `wx.getSystemInfoSync()` 拆分为 `wx.getWindowInfo()` + `wx.getDeviceInfo()`（前者官方已废弃）。
+
+### 品牌统一
+- ✅ **单一配色** — 全项目统一为深绿 `#2d5016` + 金 `#c9a84c`（原先组件/预览页混用青绿 `#3D8B7A` + 橙 `#E8A87C`，由 `.color_unify.py` 批量映射，无残留）。
+
+### 数据一致性
+- ✅ **首页数据派生** — `pages/index/index.js` 的 `hotProducts/featuredProducts` 改为从 `data/products.js` 的 `findProductById` 派生，消除与共享产品库的硬编码重复。
+- ✅ **preview.html 回正** — 预览页认证改为 CE/FCC/RoHS、合作客户 30+ 与小程序对齐；去掉 ISO9001、RoHS 与首页统计分叉。
+
+### 健壮性打磨
+- ✅ **稳定 wx:key** — 列表 `wx:key="index"` 改为稳定字段（产品用 `id`、里程碑用 `year`、认证用 `short` 等），避免重排错乱。
+- ✅ **手机号校验** — `contact` 表单增加中国大陆 11 位手机号正则校验（`onFieldInput`/`submitForm` 双重校验）。
+- ✅ **横向滚动条** — 首页热销滚动条 `onLoad` 初始 `hotScrollMax` 改为 `scrollWidth - clientWidth`（可滚动距离），首屏显示更准确。
+- ✅ **单位统一** — `banner-swiper.wxss` 边框 `1px` → `1rpx`，与全项目 rpx 体系一致。
+- ✅ **.editorconfig** — 统一编辑器缩进/换行规则。
+
+> 注：`preview.html` 仍是小程序的独立 HTML 预览副本，数据需与小程序手工保持同步；如后续维护，建议以 `data/products.js` 为唯一数据源。
+

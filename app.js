@@ -1,8 +1,9 @@
 App({
   onLaunch: function () {
-    // 获取系统信息
-    const systemInfo = wx.getSystemInfoSync();
-    this.globalData.systemInfo = systemInfo;
+    // 获取系统信息（wx.getSystemInfoSync 已废弃，拆分使用）
+    const windowInfo = wx.getWindowInfo ? wx.getWindowInfo() : {};
+    const deviceInfo = wx.getDeviceInfo ? wx.getDeviceInfo() : {};
+    this.globalData.systemInfo = Object.assign({}, windowInfo, deviceInfo);
   },
   globalData: {
     systemInfo: null,

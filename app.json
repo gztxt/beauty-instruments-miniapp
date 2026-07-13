@@ -24,26 +24,26 @@
       {
         "pagePath": "pages/index/index",
         "text": "首页",
-        "iconPath": "images/tab-home.svg",
-        "selectedIconPath": "images/tab-home-active.svg"
+        "iconPath": "images/tab-home.png",
+        "selectedIconPath": "images/tab-home-active.png"
       },
       {
         "pagePath": "pages/products/products",
         "text": "产品中心",
-        "iconPath": "images/tab-products.svg",
-        "selectedIconPath": "images/tab-products-active.svg"
+        "iconPath": "images/tab-products.png",
+        "selectedIconPath": "images/tab-products-active.png"
       },
       {
         "pagePath": "pages/about/about",
         "text": "关于我们",
-        "iconPath": "images/tab-about.svg",
-        "selectedIconPath": "images/tab-about-active.svg"
+        "iconPath": "images/tab-about.png",
+        "selectedIconPath": "images/tab-about-active.png"
       },
       {
         "pagePath": "pages/contact/contact",
         "text": "联系我们",
-        "iconPath": "images/tab-contact.svg",
-        "selectedIconPath": "images/tab-contact-active.svg"
+        "iconPath": "images/tab-contact.png",
+        "selectedIconPath": "images/tab-contact-active.png"
       }
     ]
   },
