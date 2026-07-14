@@ -247,16 +247,24 @@ def stage3_tests(diff: str, repo_path: Path, cache_dir: Path, round_id: str) -> 
 要求：覆盖验收标准所有 functional 场景。"""
 
     cmd = f"{shlex.quote(HERMES_DISPATCH)} {shlex.quote(prompt)}"
-    proc = run_cmd(cmd, cwd=repo_path, timeout=HERMES_TIMEOUT)
-    tests_out = proc.stdout
+    # Hermes 是完整 agent，可能超时；超时后其生成的测试文件通常已落盘，
+    # 不应让 TimeoutExpired 冲垮整条流水线——捕获后继续跑测试套件，交给 review 判定。
+    try:
+        proc = run_cmd(cmd, cwd=repo_path, timeout=HERMES_TIMEOUT)
+        tests_out = proc.stdout
+    except subprocess.TimeoutExpired:
+        tests_out = "[[TESTS]]\n(Hermes 测试生成超时，采用其已落盘的测试文件继续)\n[[END_TESTS]]"
 
     # 尝试提取 TESTS 块
     tests_block = extract_block(tests_out, *FENCE_TESTS) or tests_out
 
     # 运行测试（在仓库内）
     test_cmd = "npm test -- --silent 2>&1" if (repo_path / "package.json").exists() else "pytest -q 2>&1"
-    test_proc = run_cmd(test_cmd, cwd=repo_path, timeout=120)
-    test_result = test_proc.stdout + test_proc.stderr
+    try:
+        test_proc = run_cmd(test_cmd, cwd=repo_path, timeout=120)
+        test_result = test_proc.stdout + test_proc.stderr
+    except subprocess.TimeoutExpired:
+        test_result = "ERROR: 测试运行超时（120s）"
 
     save_round(cache_dir, round_id, "tests", {"diff": diff}, {"tests": tests_out, "result": test_result})
     return tests_block, test_result
