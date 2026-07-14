@@ -127,6 +127,10 @@
         <text class="action-ico">📞</text>
         <text>一键拨号</text>
       </button>
+      <button class="contact-action-btn" bindtap="copyPhone">
+        <text class="action-ico">📋</text>
+        <text>复制电话</text>
+      </button>
       <button class="contact-action-btn" bindtap="copyAddress">
         <text class="action-ico">📋</text>
         <text>复制地址</text>

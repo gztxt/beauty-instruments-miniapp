@@ -1,0 +1,21 @@
+{
+  "name": "beauty-instruments-miniapp",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "miniprogram-simulate": "^1.4.0",
+    "@types/jest": "^29.5.0"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": ["**/__tests__/**/*.test.js"],
+    "collectCoverageFrom": ["pages/**/*.js", "!**/__tests__/**"],
+    "setupFilesAfterEnv": ["<rootDir>/jest.setup.js"],
+    "moduleFileExtensions": ["js", "json", "wxml", "wxss"]
+  }
+}

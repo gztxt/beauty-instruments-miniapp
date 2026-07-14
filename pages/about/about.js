@@ -27,30 +27,103 @@ Page({
   /** 一键拨号（去横线） */
   makeCall: function () {
     const phone = (this.data.companyInfo.phone || '').replace(/-/g, '');
-    // 占位符或空号直接提示，避免 makePhoneCall 静默失败
-    if (!phone || /X/i.test(phone)) {
-      wx.showToast({ title: '电话号码待完善', icon: 'none' });
+    if (!phone || !/^\d+$/.test(phone)) {
+      wx.showToast({ title: '电话号码无效', icon: 'none' });
       return;
     }
-    wx.makePhoneCall({
-      phoneNumber: phone,
-      fail: function () {
-        wx.showToast({ title: '拨号已取消', icon: 'none' });
-      }
-    });
+    wx.showLoading({ title: '处理中...', mask: true });
+    const state = { attempt: 0 };
+    const delays = [300, 600];
+    const doCall = () => {
+      wx.makePhoneCall({
+        phoneNumber: phone,
+        success: () => {
+          wx.hideLoading();
+        },
+        fail: () => {
+          if (state.attempt < 2) {
+            const delay = delays[state.attempt];
+            state.attempt++;
+            setTimeout(doCall, delay);
+          } else {
+            wx.hideLoading();
+            wx.showToast({ title: '拨打失败，请稍后再试', icon: 'none' });
+          }
+        }
+      });
+    };
+    doCall();
+  },
+
+  /** 复制电话号码到剪贴板 */
+  copyPhone: function () {
+    const phone = (this.data.companyInfo.phone || '').trim();
+    if (!phone) {
+      wx.showToast({ title: '电话号码为空', icon: 'none' });
+      return;
+    }
+    wx.showLoading({ title: '处理中...', mask: true });
+    const state = { attempt: 0 };
+    const doCopy = () => {
+      wx.setClipboardData({
+        data: phone,
+        success: () => {
+          wx.hideLoading();
+          wx.showToast({ title: '电话已复制', icon: 'success', duration: 2000 });
+        },
+        fail: () => {
+          if (state.attempt < 2) {
+            const delay = state.attempt === 0 ? 300 : 600;
+            state.attempt++;
+            setTimeout(doCopy, delay);
+          } else {
+            wx.hideLoading();
+            wx.showToast({ title: '复制失败，请长按手动复制', icon: 'none' });
+          }
+        }
+      });
+    };
+    doCopy();
   },
 
   /** 复制公司地址到剪贴板 */
   copyAddress: function () {
-    wx.setClipboardData({
-      data: this.data.companyInfo.address,
-      success: function () {
-        wx.showToast({ title: '地址已复制', icon: 'success', duration: 2000 });
-      },
-      fail: function () {
-        wx.showToast({ title: '复制失败', icon: 'none' });
-      }
-    });
+    const address = (this.data.companyInfo.address || '').trim();
+    if (!address) {
+      wx.showToast({ title: '地址为空', icon: 'none' });
+      return;
+    }
+
+    // 防抖：成功复制后 2 秒内不再响应
+    const now = Date.now();
+    if (this.debounceUntil && now < this.debounceUntil) {
+      return; // 静默忽略，不 showLoading、不 setClipboardData、不 toast
+    }
+
+    wx.showLoading({ title: '处理中...', mask: true });
+    const state = { attempt: 0 };
+    const doCopy = () => {
+      wx.setClipboardData({
+        data: address,
+        success: () => {
+          wx.hideLoading();
+          wx.showToast({ title: '地址已复制', icon: 'success', duration: 2000 });
+          // 记录防抖截止时间
+          this.debounceUntil = Date.now() + 2000;
+        },
+        fail: () => {
+          if (state.attempt < 2) {
+            const delay = state.attempt === 0 ? 300 : 600;
+            state.attempt++;
+            setTimeout(doCopy, delay);
+          } else {
+            wx.hideLoading();
+            wx.showToast({ title: '复制失败，请长按手动复制', icon: 'none' });
+          }
+        }
+      });
+    };
+    doCopy();
   },
 
   onShareAppMessage: function () {
