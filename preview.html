@@ -448,7 +448,8 @@ const companyInfo = {
   name: '广州采薇美容仪器有限公司',
   address: '广州市番禺区石碁镇XX工业园XX栋',
   phone: '020-XXXXXXXX',
-  email: 'info@caiwei-beauty.com'
+  email: 'info@caiwei-beauty.com',
+  website: 'www.caiwei-beauty.com'
 };
 
 const products = {
@@ -614,7 +615,7 @@ function renderHome() {
       <div class="cta-content">
         <div class="cta-text">开启美容仪器合作之旅</div>
         <div class="cta-sub">OEM/ODM · 品牌定制 · 全球服务</div>
-        <button class="btn-gold" onclick="switchTab(3)" style="position:relative;z-index:2">联系我们 →</button>
+        <button class="btn-gold" onclick="switchTab(2)" style="position:relative;z-index:2">联系我们 →</button>
       </div>
     </div>
 
@@ -755,100 +756,11 @@ function renderAbout() {
   `;
 }
 
-function renderContact() {
-  return `
-    <div class="swiper-wrap" style="margin-bottom:0">
-      <div class="banner" id="banner-contact">
-        ${[
-          {tag:'CONTACT',title:'联系我们',sub:'期待与您携手合作 · 共同发展'},
-          {tag:'SERVICE',title:'全球服务网络',sub:'30+国家客户信赖 · 本地化支持'},
-          {tag:'COOPERATE',title:'合作咨询',sub:'OEM/ODM · 品牌定制 · 技术方案'}
-        ].map((s,i) => `
-          <div class="banner-slide">
-            <div class="banner-bg-deco">
-              <div class="banner-circle c1"></div>
-              <div class="banner-circle c2"></div>
-              <div class="banner-circle c3"></div>
-            </div>
-            <div class="banner-content">
-              <div class="banner-tag">${s.tag}</div>
-              <div class="banner-title">${s.title}</div>
-              <div class="banner-sub">${s.sub}</div>
-              <div class="banner-gold-line"></div>
-            </div>
-          </div>
-        `).join('')}
-      </div>
-      <div class="swiper-dots" id="dots-contact">
-        ${[0,1,2].map(i => `<div class="swiper-dot${i===0?' active':''}"></div>`).join('')}
-      </div>
-    </div>
-
-    <div class="container section">
-      <div class="section-title">联系方式</div>
-      <div class="section-divider"></div>
-      <div class="card info-card">
-        <div class="info-item">
-          <div class="info-label">🏢 公司名称</div>
-          <div class="info-value">${companyInfo.name}</div>
-        </div>
-        <div class="info-item">
-          <div class="info-label">📍 公司地址</div>
-          <div class="info-value">${companyInfo.address}</div>
-        </div>
-        <div class="info-item">
-          <div class="info-label">📞 联系电话</div>
-          <div class="info-value">${companyInfo.phone}</div>
-        </div>
-        <div class="info-item">
-          <div class="info-label">📧 电子邮箱</div>
-          <div class="info-value">${companyInfo.email}</div>
-        </div>
-      </div>
-      <div class="action-btns">
-        <button class="action-btn" onclick="showToast('拨号：${companyInfo.phone}')">📞 一键拨号</button>
-        <button class="action-btn" onclick="navigator.clipboard.writeText('${companyInfo.address}');showToast('地址已复制')">📋 复制地址</button>
-      </div>
-    </div>
-
-    <div class="container section">
-      <div class="section-title">在线留言</div>
-      <div class="section-divider"></div>
-      <div class="card form-card">
-        <div class="form-group">
-          <label class="form-label">姓名</label>
-          <input class="form-input" id="formName" placeholder="请输入您的姓名">
-        </div>
-        <div class="form-group">
-          <label class="form-label">电话</label>
-          <input class="form-input" id="formPhone" type="tel" placeholder="请输入您的联系电话">
-        </div>
-        <div class="form-group">
-          <label class="form-label">留言内容</label>
-          <textarea class="form-textarea" id="formMsg" placeholder="请描述您的需求或问题"></textarea>
-          <span class="char-count" id="charCount">0/500</span>
-        </div>
-        <button class="btn-gold submit-btn" onclick="submitForm()">提交留言</button>
-      </div>
-    </div>
-
-    <div class="container section">
-      <div class="section-title">公司位置</div>
-      <div class="section-divider"></div>
-      <div class="map-placeholder">地图加载区域（接入腾讯地图API后显示）</div>
-    </div>
-
-    <div class="footer">© 2025 美容仪器 版权所有</div>
-    ${renderTabbar(3)}
-  `;
-}
-
 function renderTabbar(active) {
   const tabs = [
     {svg:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-5h4v5h4a1 1 0 0 0 1-1v-9"/></svg>',name:'首页'},
     {svg:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>',name:'产品中心'},
-    {svg:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 12l0 4"/><path d="M12 8l0 0.01"/></svg>',name:'关于我们'},
-    {svg:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 4l10 8 10-8"/></svg>',name:'联系我们'}
+    {svg:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 12l0 4"/><path d="M12 8l0 0.01"/></svg>',name:'关于我们'}
   ];
   return `
     <div class="tabbar">
@@ -879,26 +791,18 @@ function switchProductTab(idx) {
 }
 
 function render() {
-  const pages = [renderHome, renderProducts, renderAbout, renderContact];
+  const pages = [renderHome, renderProducts, renderAbout];
   document.getElementById('app').innerHTML = pages[currentPage]();
-  
+
   // 所有页面都启动轮播
-  const bannerIds = ['banner','banner-products','banner-about','banner-contact'];
-  const dotsIds = ['','dots-products','dots-about','dots-contact'];
-  const slideCounts = [4, 3, 3, 3];
-  
+  const bannerIds = ['banner','banner-products','banner-about'];
+  const dotsIds = ['','dots-products','dots-about'];
+  const slideCounts = [4, 3, 3];
+
   if (currentPage < bannerIds.length) {
     startSwiper(bannerIds[currentPage], dotsIds[currentPage], slideCounts[currentPage]);
   }
-  
-  // 绑定文本输入
-  if (currentPage === 3) {
-    const msg = document.getElementById('formMsg');
-    if (msg) msg.oninput = function() {
-      document.getElementById('charCount').textContent = this.value.length + '/500';
-    };
-  }
-  
+
   // 恢复 product tab
   if (currentPage === 1) {
     const tabs = document.getElementById('product-tabs');
@@ -943,17 +847,6 @@ function showToast(msg) {
   el.textContent = msg;
   el.classList.add('show');
   setTimeout(() => el.classList.remove('show'), 2000);
-}
-
-function submitForm() {
-  const name = document.getElementById('formName')?.value || '';
-  const phone = document.getElementById('formPhone')?.value || '';
-  const msg = document.getElementById('formMsg')?.value || '';
-  if (!name || !phone) {
-    showToast('请填写姓名和电话');
-    return;
-  }
-  showToast('留言已提交，我们将尽快与您联系！');
 }
 
 // ================= 启动 =================

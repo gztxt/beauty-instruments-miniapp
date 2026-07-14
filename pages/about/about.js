@@ -24,6 +24,23 @@ Page({
     });
   },
 
+  /** 一键拨号（去横线） */
+  makeCall: function () {
+    wx.makePhoneCall({
+      phoneNumber: this.data.companyInfo.phone.replace(/-/g, '')
+    });
+  },
+
+  /** 复制公司地址到剪贴板 */
+  copyAddress: function () {
+    wx.setClipboardData({
+      data: this.data.companyInfo.address,
+      success: function () {
+        wx.showToast({ title: '地址已复制', icon: 'success', duration: 2000 });
+      }
+    });
+  },
+
   onShareAppMessage: function () {
     return {
       title: '关于我们 — 采薇 · 专业美容仪器品牌',

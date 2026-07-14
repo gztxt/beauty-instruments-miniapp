@@ -3,8 +3,7 @@
     "pages/index/index",
     "pages/products/products",
     "pages/product-detail/product-detail",
-    "pages/about/about",
-    "pages/contact/contact"
+    "pages/about/about"
   ],
   "window": {
     "navigationBarBackgroundColor": "#2d5016",
@@ -19,7 +18,6 @@
     "backgroundColor": "#ffffff",
     "borderStyle": "white",
     "position": "bottom",
-    "iconPosition": "left",
     "list": [
       {
         "pagePath": "pages/index/index",
@@ -38,12 +36,6 @@
         "text": "关于我们",
         "iconPath": "images/tab-about.png",
         "selectedIconPath": "images/tab-about-active.png"
-      },
-      {
-        "pagePath": "pages/contact/contact",
-        "text": "联系我们",
-        "iconPath": "images/tab-contact.png",
-        "selectedIconPath": "images/tab-contact-active.png"
       }
     ]
   },

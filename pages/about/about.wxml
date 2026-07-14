@@ -1,6 +1,6 @@
 <view class="about-page">
 
-  <!-- ===== 顶部 Banner（非轮播，展示品牌核心） ===== -->
+  <!-- ===== 顶部 Banner（品牌核心） ===== -->
   <view class="page-banner">
     <view class="banner-bg-deco">
       <view class="banner-circle circle-1"></view>
@@ -90,11 +90,15 @@
     </view>
   </view>
 
-  <!-- ===== 联系我们 ===== -->
+  <!-- ===== 联系我们（并入：原独立联系页，删除留言系统） ===== -->
   <view class="container section contact-section">
     <view class="section-title">联系我们</view>
     <view class="section-divider"></view>
     <view class="contact-card card">
+      <view class="contact-row">
+        <text class="contact-label">公司</text>
+        <text class="contact-value">{{companyInfo.name}}</text>
+      </view>
       <view class="contact-row">
         <text class="contact-label">地址</text>
         <text class="contact-value">{{companyInfo.address}}</text>
@@ -107,11 +111,28 @@
         <text class="contact-label">邮箱</text>
         <text class="contact-value">{{companyInfo.email}}</text>
       </view>
-      <view class="contact-row">
+      <view class="contact-row" wx:if="{{companyInfo.website}}">
         <text class="contact-label">官网</text>
         <text class="contact-value">{{companyInfo.website}}</text>
       </view>
     </view>
+
+    <!-- 快捷操作 -->
+    <view class="contact-actions">
+      <button class="contact-action-btn" bindtap="makeCall">
+        <text class="action-ico">📞</text>
+        <text>一键拨号</text>
+      </button>
+      <button class="contact-action-btn" bindtap="copyAddress">
+        <text class="action-ico">📋</text>
+        <text>复制地址</text>
+      </button>
+    </view>
+  </view>
+
+  <!-- ===== 底部 ===== -->
+  <view class="footer">
+    <text>© 2025 {{companyInfo.name}} 版权所有</text>
   </view>
 
 </view>
