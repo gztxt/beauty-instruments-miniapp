@@ -77,6 +77,7 @@
               <text>{{item.imgText}}</text>
             </view>
             <view class="hot-badge" wx:if="{{index < 3}}">热卖</view>
+            <view class="customizable-tag" wx:if="{{item.options.length}}">可定制</view>
           </view>
           <view class="hot-info">
             <view class="hot-name">{{item.name}}</view>
@@ -98,6 +99,7 @@
       <view class="featured-item card" wx:for="{{featuredProducts}}" wx:key="id" data-id="{{item.id}}" bindtap="goToProductDetail">
         <view class="featured-img img-{{index}}">
           <text>{{item.imgText}}</text>
+          <view class="customizable-tag" wx:if="{{item.options.length}}">可定制</view>
         </view>
         <view class="featured-info">
           <view class="featured-name">{{item.name}}</view>

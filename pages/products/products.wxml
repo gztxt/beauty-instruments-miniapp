@@ -28,6 +28,7 @@
       >
         <view class="product-img placeholder-img">
           <text>{{item.imgText}}</text>
+          <view class="customizable-tag" wx:if="{{item.options.length}}">可定制</view>
         </view>
         <view class="product-info">
           <view class="product-name">{{item.name}}</view>

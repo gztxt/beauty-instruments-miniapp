@@ -53,6 +53,21 @@
   width: 100%;
   height: 240rpx;
   background: linear-gradient(135deg, #e8e0d4, #d4cec4) !important;
+  position: relative;
+}
+
+/* 可定制标签 */
+.customizable-tag {
+  position: absolute;
+  top: 12rpx;
+  right: 12rpx;
+  background: #2d5016;
+  color: #fff;
+  font-size: 20rpx;
+  line-height: 1;
+  padding: 6rpx 12rpx;
+  border-radius: 20rpx;
+  box-shadow: 0 2rpx 6rpx rgba(0, 0, 0, 0.15);
 }
 
 .product-info {

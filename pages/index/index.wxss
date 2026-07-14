@@ -248,6 +248,20 @@
   z-index: 2;
 }
 
+/* 可定制标签（首页热销/主打卡片，右上角） */
+.customizable-tag {
+  position: absolute;
+  top: 12rpx;
+  right: 12rpx;
+  background: #2d5016;
+  color: #ffffff;
+  font-size: 20rpx;
+  line-height: 1;
+  padding: 6rpx 12rpx;
+  border-radius: 20rpx;
+  z-index: 2;
+}
+
 .hot-info {
   padding: 16rpx;
 }
