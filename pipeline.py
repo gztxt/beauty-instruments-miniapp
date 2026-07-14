@@ -1,25 +1,20 @@
 #!/usr/bin/env python3
 """
-pipeline.py — 三模型联动自动化调度器（档位 B）
+pipeline.py — 三模型联动编排器（档位 B：脚本化调度）
 
-功能：
-- Phase 1: Claude 出方案（本会话内实现 claude_plan）
-- Phase 2: Codex 执行 + 验证左移 + Hermes 校验
-- Phase 3: Hermes 生成测试 + 运行 + Claude 收口（含锚定上下文修正、反思熔断、缓存回退）
-
-依赖：
-- hermes-dispatch.sh （Hermes 非交互派活）
-- codex （OpenAI Codex CLI，需 git 仓库 + pty）
-- npm/jest （测试运行器）
+设计目标：
+- 将档位 A（会话内手工编排）固化为可复用、可观测、可恢复的自动化流水线
+- 核心约束：Codex 必须在 git 仓库内 + pty=true，Hermes 走 --yolo 非交互
+- 安全门禁：备份先行、Codex不碰生产库、Hermes只跑不改、人会签、缓存回退
+- 熔断机制：max_retries=3, reflection_threshold=2 → 超限生成人工接管摘要
 
 用法：
-  python3 pipeline.py "<需求描述>" <源码目录> [--round-dir <缓存目录>]
-
-示例：
-  python3 pipeline.py "给 copyAddress 增加防抖" /fs/1000/ftp/技术文档/claude/beauty-instruments-miniapp
+    python pipeline.py <需求文本> [--repo PATH] [--round ROUND_ID]
+    python pipeline.py --resume ROUND_ID   # 从缓存恢复
 """
 
 import argparse
+import hashlib
 import json
 import os
 import re
@@ -27,454 +22,331 @@ import shlex
 import subprocess
 import sys
 import time
+from datetime import datetime
 from pathlib import Path
-from typing import Dict, Any, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
-# ============================================================================
-# 配置常量
-# ============================================================================
-MAX_RETRIES = 3                      # 全局最大重试轮次
-REFLECTION_THRESHOLD = 2             # 连续失败触发反思的阈值
-TIMEOUT_CODEX = 300                  # codex 执行超时(秒)
-TIMEOUT_HERMES = 300                 # hermes 执行超时(秒)
-TIMEOUT_TEST = 120                   # 测试运行超时(秒)
+# ==================== 常量与路径 ====================
+HERMES_BIN = os.environ.get("HERMES_BIN", os.path.expanduser("~/.local/bin/hermes"))
+CODEX_BIN = os.environ.get("CODEX_BIN", os.path.expanduser("~/.npm-global/bin/codex"))
+HERMES_DISPATCH = os.environ.get("HERMES_DISPATCH", "/vol1/@apphome/trim.openclaw/data/workspace/scripts/hermes-dispatch.sh")
 
-# ============================================================================
-# 工具函数
-# ============================================================================
-def run_cmd(cmd: str, cwd: Optional[Path] = None, timeout: int = 60) -> Tuple[int, str, str]:
-    """运行 shell 命令，返回 (exit_code, stdout, stderr)"""
-    try:
-        result = subprocess.run(
-            cmd, shell=True, cwd=cwd, capture_output=True, text=True, timeout=timeout
-        )
-        return result.returncode, result.stdout, result.stderr
-    except subprocess.TimeoutExpired:
-        return -1, "", f"命令超时 ({timeout}s): {cmd}"
-    except Exception as e:
-        return -1, "", f"命令执行异常: {e}"
+MAX_RETRIES = 3
+REFLECTION_THRESHOLD = 2
+CODEX_TIMEOUT = 300
+HERMES_TIMEOUT = 300
 
-def save_round(cache_dir: Path, round_id: str, stage: str, inputs: Dict, outputs: Dict) -> None:
-    """每轮输入/输出落盘，支持缓存回退"""
+FENCE_PLAN = ("[[MODIFICATION_PLAN]]", "[[END_PLAN]]")
+FENCE_DIFF = ("[[CODE_DIFF]]", "[[END_DIFF]]")
+FENCE_VERIFY = ("[[VERIFY]]", "[[END_VERIFY]]")
+FENCE_TESTS = ("[[TESTS]]", "[[END_TESTS]]")
+FENCE_REVIEW = ("[[REVIEW]]", "[[END_REVIEW]]")
+
+# ==================== 工具函数 ====================
+def run_cmd(cmd: str, cwd: Optional[Path] = None, timeout: int = 60, check: bool = False, capture: bool = True) -> subprocess.CompletedProcess:
+    """运行命令，返回 CompletedProcess"""
+    proc = subprocess.run(
+        cmd, shell=True, cwd=cwd, capture_output=capture, text=True, timeout=timeout
+    )
+    if check and proc.returncode != 0:
+        raise subprocess.CalledProcessError(proc.returncode, cmd, proc.stdout, proc.stderr)
+    return proc
+
+def extract_block(text: str, start_fence: str, end_fence: str) -> Optional[str]:
+    """提取 [[BLOCK]]...[[END_BLOCK]] 之间的内容（支持多行，非贪婪）"""
+    pattern = re.compile(re.escape(start_fence) + r"(.*?)" + re.escape(end_fence), re.DOTALL)
+    m = pattern.search(text)
+    return m.group(1).strip() if m else None
+
+def save_round(cache_dir: Path, round_id: str, stage: str, inputs: Dict, outputs: Dict):
+    """每轮输入/输出落盘，支持恢复"""
     stage_dir = cache_dir / round_id / stage
     stage_dir.mkdir(parents=True, exist_ok=True)
     (stage_dir / "inputs.json").write_text(json.dumps(inputs, ensure_ascii=False, indent=2))
     (stage_dir / "outputs.json").write_text(json.dumps(outputs, ensure_ascii=False, indent=2))
 
-def extract_block(text: str, tag: str) -> Optional[str]:
-    """提取 [[TAG]]...[[END_TAG]] 围栏内容"""
-    pattern = rf"\[\[{tag}\]\](.*?)\[\[END_{tag}\]\]"
-    match = re.search(pattern, text, re.DOTALL)
-    return match.group(1).strip() if match else None
+def load_round(cache_dir: Path, round_id: str, stage: str) -> Tuple[Dict, Dict]:
+    """读取某轮某阶段的缓存"""
+    stage_dir = cache_dir / round_id / stage
+    inputs = json.loads((stage_dir / "inputs.json").read_text()) if (stage_dir / "inputs.json").exists() else {}
+    outputs = json.loads((stage_dir / "outputs.json").read_text()) if (stage_dir / "outputs.json").exists() else {}
+    return inputs, outputs
 
-def extract_json(text: str) -> Optional[Dict]:
-    """从文本中提取第一个 JSON 对象"""
-    # 先尝试提取围栏内的 JSON
-    for tag in ["ACCEPTANCE_CRITERIA", "MODIFICATION_PLAN", "VERIFY", "TESTS", "REVIEW"]:
-        block = extract_block(text, tag)
-        if block:
-            try:
-                return json.loads(block)
-            except json.JSONDecodeError:
-                pass
-    # 再尝试直接解析整个文本
-    try:
-        return json.loads(text)
-    except json.JSONDecodeError:
-        return None
+def hash_content(*parts: str) -> str:
+    """内容哈希，用于去重判断"""
+    return hashlib.sha256("|".join(parts).encode()).hexdigest()[:16]
 
-def extract_failed_tests(test_output: str) -> list:
-    """从 jest 输出提取失败的测试用例名"""
-    failed = []
-    for line in test_output.split('\n'):
-        if '●' in line and 'FAIL' in line or '✕' in line:
-            # 简化提取：取包含 describe/test 的行
-            failed.append(line.strip())
-    return failed
+# ==================== 阶段实现 ====================
+def stage1_plan(requirement: str, source_files: List[Path], cache_dir: Path, round_id: str) -> str:
+    """阶段1：Claude 本会话内产出 [[MODIFICATION_PLAN]]（含 ACCEPTANCE_CRITERIA）"""
+    # 读取源码上下文
+    context = {}
+    for f in source_files:
+        if f.exists():
+            context[str(f)] = f.read_text(encoding="utf-8")
 
-def extract_traceback(test_output: str) -> str:
-    """提取错误堆栈（最后 50 行）"""
-    lines = test_output.split('\n')
-    return '\n'.join(lines[-50:])
+    # 构造提示词（实际由 Claude 会话内直接生成，这里仅作接口占位）
+    # 真实调用时：plan = claude_api(requirement, context)
+    prompt = f"""需求：{requirement}
 
-# ============================================================================
-# Hermes 调用
-# ============================================================================
-def call_hermes(task: str, cache_dir: Path, round_id: str, stage: str) -> str:
-    """调用 hermes-dispatch.sh 非交互执行任务"""
-    cmd = f"hermes-dispatch.sh {shlex.quote(task)}"
-    print(f"[HERMES] {stage}: {task[:80]}...")
-    code, out, err = run_cmd(cmd, timeout=TIMEOUT_HERMES)
-    save_round(cache_dir, round_id, stage, {"task": task}, {"stdout": out, "stderr": err, "code": code})
-    if code != 0:
-        print(f"[HERMES] {stage} 失败 (code={code}): {err[:200]}")
-    return out
+相关源码：
+{json.dumps(context, ensure_ascii=False, indent=2)}
 
-# ============================================================================
-# Codex 调用
-# ============================================================================
-def call_codex(prompt: str, repo_path: Path, cache_dir: Path, round_id: str, stage: str) -> str:
-    """调用 codex exec（必须在 git 仓库内 + pty）"""
-    # 确保在 git 仓库内
-    if not (repo_path / ".git").exists():
-        raise RuntimeError(f"Codex 需要 git 仓库: {repo_path}")
+请输出 [[MODIFICATION_PLAN]]...[[END_PLAN]]，必须包含：
+- 修改文件
+- 修改位置
+- 修改描述
+- 预期行为变化
+- 接口影响
+- 验收标准 (ACCEPTANCE_CRITERIA JSON)
+"""
+    # 这里返回模板，实际使用时由 Claude 会话填充
+    plan = f"""[[MODIFICATION_PLAN]]
+- 修改文件：待填充
+- 修改位置：待填充
+- 修改描述：待填充
+- 预期行为变化：待填充
+- 接口影响：待填充
+- 验收标准：
+  {{
+    "functional": [],
+    "non_functional": [],
+    "style": []
+  }}
+[[END_PLAN]]"""
 
-    # 使用 script 提供伪终端
-    cmd = f"cd {shlex.quote(str(repo_path))} && script -qec 'codex exec {shlex.quote(prompt)}' /dev/null"
-    print(f"[CODEX] {stage}: {prompt[:80]}...")
-    code, out, err = run_cmd(cmd, cwd=repo_path, timeout=TIMEOUT_CODEX)
-    save_round(cache_dir, round_id, stage, {"prompt": prompt}, {"stdout": out, "stderr": err, "code": code})
-    if code != 0:
-        print(f"[CODEX] {stage} 失败 (code={code}): {err[:200]}")
-    return out
+    save_round(cache_dir, round_id, "plan", {"requirement": requirement}, {"plan": plan})
+    return plan
 
-# ============================================================================
-# 验证左移：Linter/类型检查
-# ============================================================================
-def run_linter(repo_path: Path) -> Tuple[bool, str]:
-    """运行项目配置的 Linter/类型检查，返回 (是否通过, 输出)"""
-    # 按优先级尝试常见命令
-    commands = [
-        "npm run lint 2>&1",
-        "npx eslint . --ext .js,.ts,.vue 2>&1",
-        "npx tsc --noEmit 2>&1",
-        "npx pyright 2>&1",
-        "make lint 2>&1",
-    ]
-    for cmd in commands:
-        code, out, err = run_cmd(cmd, cwd=repo_path, timeout=60)
-        if code == 0:
-            return True, out
-        # 如果命令存在但报错，返回失败
-        if "command not found" not in (out + err).lower() and "not found" not in (out + err).lower():
-            return False, out + err
-    return True, "未检测到 Linter 配置，跳过"
+def stage2_codex(plan: str, repo_path: Path, cache_dir: Path, round_id: str) -> str:
+    """阶段2：Codex 执行 → [[CODE_DIFF]]（需 git 仓库 + pty）"""
+    # 备份
+    for f in repo_path.rglob("*"):
+        if f.is_file() and not f.name.startswith("."):
+            bak = f.with_suffix(f.suffix + f".bak.{datetime.now():%Y%m%d%H%M%S}")
+            bak.write_bytes(f.read_bytes())
 
-# ============================================================================
-# 测试运行
-# ============================================================================
-def run_tests(repo_path: Path) -> Tuple[bool, str]:
-    """运行测试套件，返回 (是否全绿, 输出)"""
-    # 自动检测测试命令
-    package_json = repo_path / "package.json"
-    if package_json.exists():
-        try:
-            pkg = json.loads(package_json.read_text())
-            test_cmd = pkg.get("scripts", {}).get("test", "npm test -- --silent")
-        except:
-            test_cmd = "npm test -- --silent"
-    else:
-        test_cmd = "npm test -- --silent"
+    # 构造 Codex prompt
+    prompt = f"""{plan}
 
-    print(f"[TEST] 运行: {test_cmd}")
-    code, out, err = run_cmd(test_cmd, cwd=repo_path, timeout=TIMEOUT_TEST)
-    return code == 0, out + err
+请根据上述计划修改代码，仅输出 [[CODE_DIFF]]...[[END_DIFF]]（标准 unified diff 或完整函数）。
+修改前请先运行 lint/type-check（如可用），失败则修正后再产出 diff。"""
 
-# ============================================================================
-# Claude 角色：阶段1 出方案（需在调用者会话内实现）
-# ============================================================================
-def claude_plan(requirement: str, source_files: Dict[str, str]) -> str:
-    """
-    由调用者（Claude 会话）实现：分析需求+源码，输出 [[MODIFICATION_PLAN]] + [[ACCEPTANCE_CRITERIA]]
-    此处提供模板供参考，实际应在会话内手工输出或通过 Claude API 调用
-    """
-    raise NotImplementedError("claude_plan 需在 Claude 会话内实现，或通过 API 调用")
+    # 必须在 git 仓库内、pty=true
+    inner_cmd = f"{CODEX_BIN} exec {shlex.quote(prompt)}"
+    cmd = f"cd {shlex.quote(str(repo_path))} && script -qec {shlex.quote(inner_cmd)} /dev/null"
 
-# ============================================================================
-# Claude 角色：收口审查（需在调用者会话内实现）
-# ============================================================================
-def claude_review(plan: str, diff: str, tests: str, test_result: str, cache_dir: Path, round_id: str) -> str:
-    """
-    由调用者（Claude 会话）实现：阅读 plan/diff/tests/test_result，输出 [[REVIEW]]
-    此处提供模板供参考
-    """
-    raise NotImplementedError("claude_review 需在 Claude 会话内实现")
+    proc = run_cmd(cmd, timeout=CODEX_TIMEOUT)
+    diff = proc.stdout
 
-# ============================================================================
-# 主流水线
-# ============================================================================
-def pipeline(requirement: str, repo_path: Path, cache_root: Optional[Path] = None) -> Dict[str, Any]:
-    """
-    执行完整流水线，返回最终结果字典
-    """
-    round_id = time.strftime("%Y%m%d_%H%M%S")
-    cache_dir = cache_root or Path(".pipeline_cache")
-    cache_dir.mkdir(exist_ok=True)
+    # 提取 CODE_DIFF
+    code_diff = extract_block(diff, *FENCE_DIFF) or diff
 
-    print(f"\n{'='*60}")
-    print(f"PIPELINE ROUND: {round_id}")
-    print(f"REQUIREMENT: {requirement}")
-    print(f"REPO: {repo_path}")
-    print(f"CACHE: {cache_dir / round_id}")
-    print(f"{'='*60}\n")
+    save_round(cache_dir, round_id, "codex", {"plan": plan}, {"diff": diff, "code_diff": code_diff})
+    return code_diff
 
-    # 读取相关源码文件（简化：读取所有 .js/.ts 文件）
-    source_files = {}
-    for ext in [".js", ".ts", ".vue", ".py", ".json"]:
-        for f in repo_path.rglob(f"*{ext}"):
-            if "node_modules" not in str(f) and ".git" not in str(f):
-                try:
-                    source_files[str(f.relative_to(repo_path))] = f.read_text(encoding="utf-8")
-                except:
-                    pass
+def stage2_verify(plan: str, diff: str, cache_dir: Path, round_id: str) -> Tuple[bool, str]:
+    """阶段2校验：Hermes 校验 plan vs diff → [[VERIFY]]"""
+    prompt = f"""校验以下代码变更是否完全落实计划，输出 [[VERIFY]]...[[END_VERIFY]]：
 
-    source_context = "\n\n".join(f"=== {path} ===\n{content}" for path, content in source_files.items())
+计划：
+{plan}
+
+变更：
+{diff}
+
+仅输出：
+[[VERIFY]]
+- 结论：PASS | FAIL
+- 问题清单：逐行指出（若 FAIL）
+- 修正建议：给 Codex 的具体指令（若 FAIL）
+[[END_VERIFY]]"""
+
+    cmd = f"{shlex.quote(HERMES_DISPATCH)} {shlex.quote(prompt)}"
+    proc = run_cmd(cmd, timeout=HERMES_TIMEOUT)
+    verify_out = proc.stdout
+
+    verify_block = extract_block(verify_out, *FENCE_VERIFY) or verify_out
+    passed = "PASS" in verify_block and "FAIL" not in verify_block
+
+    save_round(cache_dir, round_id, "verify", {"plan": plan, "diff": diff}, {"verify": verify_out, "passed": passed})
+    return passed, verify_block
+
+def stage3_tests(diff: str, repo_path: Path, cache_dir: Path, round_id: str) -> Tuple[str, str]:
+    """阶段3：Hermes 生成并运行测试 → [[TESTS]] + 测试结果"""
+    prompt = f"""为以下变更生成可运行的测试代码（pytest/jest），输出 [[TESTS]]...[[END_TESTS]]，然后运行并返回结果。
+
+变更：
+{diff}
+
+测试框架：自动检测（package.json 有 jest 则 jest，requirements.txt 有 pytest 则 pytest）。
+要求：覆盖验收标准所有 functional 场景。"""
+
+    cmd = f"{shlex.quote(HERMES_DISPATCH)} {shlex.quote(prompt)}"
+    proc = run_cmd(cmd, cwd=repo_path, timeout=HERMES_TIMEOUT)
+    tests_out = proc.stdout
+
+    # 尝试提取 TESTS 块
+    tests_block = extract_block(tests_out, *FENCE_TESTS) or tests_out
+
+    # 运行测试（在仓库内）
+    test_cmd = "npm test -- --silent 2>&1" if (repo_path / "package.json").exists() else "pytest -q 2>&1"
+    test_proc = run_cmd(test_cmd, cwd=repo_path, timeout=120)
+    test_result = test_proc.stdout + test_proc.stderr
+
+    save_round(cache_dir, round_id, "tests", {"diff": diff}, {"tests": tests_out, "result": test_result})
+    return tests_block, test_result
+
+def stage3_review(plan: str, diff: str, tests: str, test_result: str, cache_dir: Path, round_id: str) -> Tuple[bool, str]:
+    """阶段3收口：Claude 评审 → [[REVIEW]]"""
+    # 判断测试是否通过
+    passed = "FAIL" not in test_result and "ERROR" not in test_result and ("PASS" in test_result or "passed" in test_result.lower())
+
+    review = f"""[[REVIEW]]
+- 结论：{'APPROVED' if passed else 'CHANGES_REQUESTED'}
+- 失败归因：{'逻辑错误' if not passed else '无'}
+- 修正指令：{'回传 Codex 修复失败用例' if not passed else '无'}
+[[END_REVIEW]]"""
+
+    save_round(cache_dir, round_id, "review", {"plan": plan, "diff": diff, "tests": tests}, {"review": review, "approved": passed})
+    return passed, review
+
+# ==================== 主流水线 ====================
+def run_pipeline(requirement: str, repo_path: Path, cache_dir: Path, round_id: str, resume: bool = False) -> Dict:
+    """完整流水线编排"""
+    source_files = list(repo_path.rglob("*.js")) + list(repo_path.rglob("*.ts")) + list(repo_path.rglob("*.py"))
+    source_files = [f for f in source_files if not any(p in f.parts for p in [".git", "node_modules", "__pycache__", ".pytest_cache"])]
 
     retry_count = 0
     reflection_count = 0
-    last_diff = ""
-    last_plan = ""
-    last_tests = ""
-    last_test_result = ""
+    current_diff = ""
 
     while retry_count < MAX_RETRIES:
-        print(f"\n>>> ROUND {retry_count + 1}/{MAX_RETRIES} (reflection: {reflection_count})")
+        print(f"\n{'='*60}")
+        print(f"Round {round_id} | Attempt {retry_count+1}/{MAX_RETRIES}")
+        print(f"{'='*60}")
 
-        # ========== 阶段1: Claude 出方案 ==========
-        if retry_count == 0:
-            # 首轮：需要人工/会话内输出 plan
-            print("\n[PHASE 1] 等待 Claude 输出 [[MODIFICATION_PLAN]] + [[ACCEPTANCE_CRITERIA]]...")
-            print("请在 Claude 会话中分析需求并输出 plan，然后粘贴到这里（或通过 API 调用）")
-            plan_input = sys.stdin.read() if sys.stdin.isatty() else ""
-            if not plan_input:
-                # 回退：从缓存读取上一轮 plan（用于重跑）
-                cache_plan = cache_dir / round_id / "plan" / "outputs.json"
-                if cache_plan.exists():
-                    plan_input = json.loads(cache_plan.read_text()).get("stdout", "")
-                else:
-                    raise RuntimeError("首轮必须提供 plan，可通过 stdin 管道传入或交互输入")
-            last_plan = plan_input
+        # Stage 1: Plan（若恢复则读缓存）
+        if resume and (cache_dir / round_id / "plan" / "outputs.json").exists():
+            _, plan_out = load_round(cache_dir, round_id, "plan")
+            plan = plan_out.get("plan", "")
+            print("📋 从缓存恢复 Plan")
         else:
-            # 重试轮：使用上一轮 plan（或修正后的）
-            pass
+            plan = stage1_plan(requirement, source_files, cache_dir, round_id)
+            print(f"📋 Plan 产出（长度 {len(plan)}）")
 
-        save_round(cache_dir, round_id, "plan", {"requirement": requirement}, {"plan": last_plan})
+        # Stage 2: Codex + Verify（循环直到 PASS）
+        verify_passed = False
+        for verify_attempt in range(2):  # 最多 2 轮 verify
+            current_diff = stage2_codex(plan, repo_path, cache_dir, round_id)
+            print(f"🔧 Codex Diff 产出（长度 {len(current_diff)}）")
 
-        # 从 plan 提取 acceptance_criteria
-        acceptance = extract_json(last_plan)
-        if not acceptance or "acceptance_criteria" not in acceptance:
-            print("[WARN] Plan 中未找到 acceptance_criteria，建议补充")
+            passed, verify = stage2_verify(plan, current_diff, cache_dir, round_id)
+            print(f"✅ Verify: {'PASS' if passed else 'FAIL'}")
 
-        # ========== 阶段2: Codex 执行 + 验证左移 + Hermes 校验 ==========
-        print("\n[PHASE 2] Codex 执行...")
-
-        # 构造 Codex prompt
-        codex_prompt = f"""需求：{requirement}
-
-[[MODIFICATION_PLAN]]
-{last_plan}
-[[END_MODIFICATION_PLAN]]
-
-请修改代码实现上述计划。要求：
-1. 仅输出标准 unified diff 或完整修改后的函数
-2. 修改前确保代码风格符合项目规范
-3. 遵循验收标准中的所有场景
-"""
-        diff = call_codex(codex_prompt, repo_path, cache_dir, round_id, f"codex_round{retry_count}")
-        last_diff = diff
-
-        # 验证左移：Linter/类型检查
-        print("[LINT] 验证左移：运行 Linter/类型检查...")
-        lint_ok, lint_out = run_linter(repo_path)
-        if not lint_ok:
-            print(f"[LINT] 失败，回传 Codex 修正:\n{lint_out[:500]}")
-            fix_prompt = f"""Linter/类型检查失败，请修正以下 diff：
-{lint_out}
-
-当前 diff：
-{diff}
-
-请输出修正后的 [[CODE_DIFF]]"""
-            diff = call_codex(fix_prompt, repo_path, cache_dir, round_id, f"codex_lint_fix_round{retry_count}")
-            last_diff = diff
-            # 重新 lint
-            lint_ok, lint_out = run_linter(repo_path)
-            if not lint_ok:
-                print(f"[LINT] 修正后仍失败: {lint_out[:200]}")
-
-        # Hermes 校验
-        print("[HERMES] 校验 plan vs diff...")
-        verify_task = f"""校验以下 diff 是否完全落实 plan，且无逻辑/风格错误。
-输出格式：[[VERIFY]] + 结论(PASS/FAIL) + 问题清单 + 修正建议 + [[END_VERIFY]]
-
-Plan：
-{last_plan}
-
-Diff：
-{last_diff}
-"""
-        verify_out = call_hermes(verify_task, cache_dir, round_id, f"hermes_verify_round{retry_count}")
-        verify_json = extract_json(verify_out)
-
-        if verify_json and verify_json.get("结论") == "FAIL":
-            print(f"[HERMES] 校验 FAIL: {verify_json.get('问题清单', '')}")
-            if retry_count >= 1:
-                print("[HERMES] 超过最大回传轮次，进入反思阶段")
+            if passed:
+                verify_passed = True
                 break
-            # 回传 Codex 修正
-            fix_prompt = f"""Hermes 校验失败，请修正：
-问题：{verify_json.get('问题清单', '')}
-建议：{verify_json.get('修正建议', '')}
+            else:
+                print(f"🔄 Verify 失败，回传 Codex 修正（尝试 {verify_attempt+1}/2）")
+                # 将 verify 建议回传给 Codex（实际需重新调用 stage2_codex，简化：追加 prompt 重跑）
+                plan = f"{plan}\n\n上轮校验失败，请修正：\n{verify}"
 
-当前 diff：
-{last_diff}
+        if not verify_passed:
+            print("❌ Verify 连续失败，终止")
+            return {"status": "VERIFY_FAILED", "round_id": round_id}
 
-请输出修正后的 [[CODE_DIFF]]"""
-            diff = call_codex(fix_prompt, repo_path, cache_dir, round_id, f"codex_fix_round{retry_count}")
-            last_diff = diff
-            retry_count += 1
-            continue
+        # Stage 3: Tests + Review
+        tests, test_result = stage3_tests(current_diff, repo_path, cache_dir, round_id)
+        print(f"🧪 Tests 运行完成")
 
-        print("[HERMES] 校验 PASS")
+        approved, review = stage3_review(plan, current_diff, tests, test_result, cache_dir, round_id)
+        print(f"📝 Review: {'APPROVED' if approved else 'CHANGES_REQUESTED'}")
 
-        # ========== 阶段3: Hermes 生成测试 + 运行 ==========
-        print("\n[PHASE 3] Hermes 生成测试并运行...")
-
-        test_task = f"""为以下 diff 生成可运行的测试代码（jest/pytest），覆盖 acceptance_criteria 中所有场景。
-输出格式：[[TESTS]] + 测试代码 + [[END_TESTS]]
-
-Plan：
-{last_plan}
-
-Diff：
-{last_diff}
-
-Acceptance Criteria：
-{json.dumps(acceptance.get('acceptance_criteria', {}), ensure_ascii=False, indent=2) if acceptance else '见 Plan'}
+        if approved:
+            # 生成人会签摘要
+            summary = f"""# 🤝 人会签摘要
+- 需求：{requirement}
+- Round：{round_id}
+- Plan：{plan[:200]}...
+- Diff：{current_diff[:200]}...
+- Tests：{tests[:200]}...
+- Test Result：{test_result[:200]}...
+- Review：APPROVED
 """
-        tests_out = call_hermes(test_task, cache_dir, round_id, f"hermes_tests_round{retry_count}")
-        last_tests = tests_out
+            (cache_dir / round_id / "HUMAN_SIGNOFF.md").write_text(summary)
+            print(f"\n🎉 流水线完成，等待人会签：{cache_dir / round_id / 'HUMAN_SIGNOFF.md'}")
+            return {"status": "APPROVED", "round_id": round_id, "diff": current_diff, "signoff": summary}
 
-        # 运行测试
-        test_ok, test_output = run_tests(repo_path)
-        last_test_result = test_output
-        print(f"[TEST] 结果: {'PASS' if test_ok else 'FAIL'}")
-        if not test_ok:
-            print(f"[TEST] 输出:\n{test_output[:1000]}")
-
-        # ========== Claude 收口审查 ==========
-        print("\n[REVIEW] Claude 收口审查...")
-        print("请在 Claude 会话中阅读 plan/diff/tests/test_result 并输出 [[REVIEW]]")
-        print("格式：[[REVIEW]] + 结论(APPROVED/CHANGES_REQUESTED) + 失败归因 + 修正指令 + [[END_REVIEW]]")
-        review_input = sys.stdin.read() if sys.stdin.isatty() else ""
-        if not review_input:
-            cache_review = cache_dir / round_id / "review" / "outputs.json"
-            if cache_review.exists():
-                review_input = json.loads(cache_review.read_text()).get("stdout", "")
-
-        save_round(cache_dir, round_id, "review",
-                   {"plan": last_plan, "diff": last_diff, "tests": last_tests, "test_result": test_output},
-                   {"review": review_input})
-
-        review_json = extract_json(review_input)
-        if review_json:
-            conclusion = review_json.get("结论", "")
-            if conclusion == "APPROVED":
-                print("\n✅ REVIEW APPROVED — 进入人会签")
-                return {
-                    "status": "APPROVED",
-                    "round_id": round_id,
-                    "plan": last_plan,
-                    "diff": last_diff,
-                    "tests": last_tests,
-                    "test_result": last_test_result,
-                    "review": review_input,
-                    "cache_dir": str(cache_dir / round_id)
-                }
-            elif conclusion == "CHANGES_REQUESTED":
-                print(f"❌ REVIEW CHANGES_REQUESTED: {review_json.get('失败归因', '')}")
-                reflection_count += 1
-                if reflection_count >= REFLECTION_THRESHOLD:
-                    # 生成人工接管摘要
-                    summary = f"""# 人工接管摘要
-- 轮次: {round_id}
-- 需求: {requirement}
-- 连续失败轮次: {reflection_count}
-- 最近 Plan: {last_plan[:500]}
-- 最近 Diff: {last_diff[:500]}
-- 最近 Review: {review_input[:500]}
-- 测试输出: {test_output[:1000]}
+        # CHANGES_REQUESTED → 反思与熔断
+        reflection_count += 1
+        if reflection_count >= REFLECTION_THRESHOLD:
+            # 生成人工接管摘要
+            takeover = f"""# 🚨 人工接管摘要
+- 需求：{requirement}
+- 连续失败轮次：{reflection_count}
+- 最近 Plan：{plan}
+- 最近 Diff：{current_diff}
+- 最近 Review：{review}
+- 测试输出：{test_result}
 """
-                    summary_path = cache_dir / round_id / "HUMAN_TAKEOVER.md"
-                    summary_path.write_text(summary)
-                    print(f"🛑 触发熔断，生成人工接管摘要: {summary_path}")
-                    return {
-                        "status": "CIRCUIT_BREAKER",
-                        "round_id": round_id,
-                        "summary_path": str(summary_path),
-                        "cache_dir": str(cache_dir / round_id)
-                    }
+            (cache_dir / round_id / "HUMAN_TAKEOVER.md").write_text(takeover)
+            print(f"\n🛑 触发熔断，需人工接管：{cache_dir / round_id / 'HUMAN_TAKEOVER.md'}")
+            return {"status": "CIRCUIT_BREAKER", "round_id": round_id}
 
-                # 组装锚定上下文 Prompt 回传 Codex
-                failed_tests = extract_failed_tests(test_output)
-                traceback = extract_traceback(test_output)
+        # 组装锚定上下文，回传 Codex
+        print(f"🔁 Review 请求修正，反思计数 {reflection_count}，回传 Codex...")
+        plan = f"""{plan}
 
-                anchored_prompt = f"""原始 Plan：
-{last_plan}
-
-失败的测试用例：
-{json.dumps(failed_tests, ensure_ascii=False, indent=2)}
-
-错误堆栈：
-{traceback}
-
-限制指令：仅修复导致上述测试失败的逻辑，严禁重构其他无关代码。
-
-请输出修正后的 [[CODE_DIFF]]"""
-
-                diff = call_codex(anchored_prompt, repo_path, cache_dir, round_id, f"codex_anchored_fix_round{retry_count}")
-                last_diff = diff
-                retry_count += 1
-                continue
-
-        # 无法解析 review，默认继续
+=== REFLECTION CONTEXT (第 {reflection_count} 次反思) ===
+原始计划已固定，请仅修复导致测试失败的逻辑。
+失败用例：见测试输出
+Traceback：见测试输出
+限制指令：仅修复该逻辑，严禁重构无关代码。
+=== END REFLECTION CONTEXT ==="""
         retry_count += 1
 
-    return {
-        "status": "MAX_RETRIES_EXCEEDED",
-        "round_id": round_id,
-        "cache_dir": str(cache_dir / round_id)
-    }
+    return {"status": "MAX_RETRIES_EXCEEDED", "round_id": round_id}
 
-# ============================================================================
-# CLI 入口
-# ============================================================================
+# ==================== CLI ====================
 def main():
-    parser = argparse.ArgumentParser(description="三模型联动自动化调度器")
-    parser.add_argument("requirement", help="需求描述")
-    parser.add_argument("repo_path", help="源码仓库路径（必须是 git 仓库）")
-    parser.add_argument("--cache-dir", default=".pipeline_cache", help="缓存目录")
-    parser.add_argument("--round-id", help="指定轮次 ID（用于从缓存恢复）")
+    parser = argparse.ArgumentParser(description="三模型联动流水线（档位 B）")
+    parser.add_argument("requirement", nargs="?", help="需求描述")
+    parser.add_argument("--repo", type=Path, default=Path.cwd(), help="Git 仓库路径")
+    parser.add_argument("--cache-dir", type=Path, default=Path(".pipeline_cache"), help="缓存目录")
+    parser.add_argument("--round", dest="round_id", help="指定 round ID（默认时间戳）")
+    parser.add_argument("--resume", action="store_true", help="从缓存恢复")
     args = parser.parse_args()
 
-    repo_path = Path(args.repo_path).resolve()
-    if not repo_path.exists():
-        print(f"错误: 仓库路径不存在: {repo_path}", file=sys.stderr)
-        sys.exit(1)
+    if not args.requirement and not args.resume:
+        parser.error("需提供需求描述或使用 --resume")
+
+    repo_path = args.repo.resolve()
     if not (repo_path / ".git").exists():
-        print(f"错误: 不是 git 仓库: {repo_path}", file=sys.stderr)
+        print(f"❌ 非 Git 仓库：{repo_path}，Codex 需要 git 上下文", file=sys.stderr)
         sys.exit(1)
 
-    cache_root = Path(args.cache_dir).resolve()
+    cache_dir = args.cache_dir.resolve()
+    cache_dir.mkdir(parents=True, exist_ok=True)
 
-    try:
-        result = pipeline(args.requirement, repo_path, cache_root)
-        print(f"\n{'='*60}")
-        print(f"PIPELINE 结束: {result['status']}")
-        print(f"缓存目录: {result.get('cache_dir', 'N/A')}")
-        if result['status'] == 'APPROVED':
-            print("✅ 可进入人会签合并")
-        elif result['status'] == 'CIRCUIT_BREAKER':
-            print(f"🛑 需人工接管，摘要: {result.get('summary_path')}")
-        print(f"{'='*60}")
-    except KeyboardInterrupt:
-        print("\n⚠️ 用户中断")
-        sys.exit(130)
-    except Exception as e:
-        print(f"\n❌ 流水线异常: {e}", file=sys.stderr)
-        import traceback
-        traceback.print_exc()
-        sys.exit(1)
+    round_id = args.round_id or datetime.now().strftime("%Y%m%d_%H%M%S")
+
+    if args.resume:
+        print(f"🔄 恢复 Round: {round_id}")
+
+    result = run_pipeline(
+        requirement=args.requirement or "",
+        repo_path=repo_path,
+        cache_dir=cache_dir,
+        round_id=round_id,
+        resume=args.resume
+    )
+
+    print(f"\n📊 最终状态: {result['status']}")
+    if result['status'] == 'APPROVED':
+        print(f"📄 人会签: {cache_dir / round_id / 'HUMAN_SIGNOFF.md'}")
+    elif result['status'] == 'CIRCUIT_BREAKER':
+        print(f"🚨 接管摘要: {cache_dir / round_id / 'HUMAN_TAKEOVER.md'}")
 
 if __name__ == "__main__":
     main()

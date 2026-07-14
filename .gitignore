@@ -18,3 +18,5 @@ ehthumbs.db
 
 # 三模型联动闭环运行日志（不进源码库）
 runs/
+.pipeline_cache/
+*.bak.*
