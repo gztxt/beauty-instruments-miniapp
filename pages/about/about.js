@@ -26,8 +26,17 @@ Page({
 
   /** 一键拨号（去横线） */
   makeCall: function () {
+    const phone = (this.data.companyInfo.phone || '').replace(/-/g, '');
+    // 占位符或空号直接提示，避免 makePhoneCall 静默失败
+    if (!phone || /X/i.test(phone)) {
+      wx.showToast({ title: '电话号码待完善', icon: 'none' });
+      return;
+    }
     wx.makePhoneCall({
-      phoneNumber: this.data.companyInfo.phone.replace(/-/g, '')
+      phoneNumber: phone,
+      fail: function () {
+        wx.showToast({ title: '拨号已取消', icon: 'none' });
+      }
     });
   },
 
@@ -37,6 +46,9 @@ Page({
       data: this.data.companyInfo.address,
       success: function () {
         wx.showToast({ title: '地址已复制', icon: 'success', duration: 2000 });
+      },
+      fail: function () {
+        wx.showToast({ title: '复制失败', icon: 'none' });
       }
     });
   },

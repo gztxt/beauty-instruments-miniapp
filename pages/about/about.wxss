@@ -80,6 +80,14 @@
   text-align: left;
 }
 
+.mvv-line {
+  margin-bottom: 8rpx;
+}
+
+.mvv-line:last-child {
+  margin-bottom: 0;
+}
+
 .mvv-highlight {
   color: #2d5016;
   font-weight: 600;

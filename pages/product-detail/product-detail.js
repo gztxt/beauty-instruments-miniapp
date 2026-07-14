@@ -23,7 +23,7 @@ Page({
   },
 
   goToContact: function () {
-    wx.switchTab({ url: '/pages/contact/contact' });
+    wx.switchTab({ url: '/pages/about/about' });
   },
 
   goBack: function () {

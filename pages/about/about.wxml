@@ -43,7 +43,11 @@
         </view>
         <view class="mvv-label">价值观</view>
         <view class="mvv-title">真实 · 专业 · 长期主义</view>
-        <view class="mvv-desc">• <text class="mvv-highlight">真实</text>：不夸大功效，用数据和体验说话<br/>• <text class="mvv-highlight">专业</text>：每一款产品都经过严谨的研发与测试<br/>• <text class="mvv-highlight">长期主义</text>：做耐用的产品，做值得长期信任的品牌</view>
+        <view class="mvv-desc">
+          <view class="mvv-line">• <text class="mvv-highlight">真实</text>：不夸大功效，用数据和体验说话</view>
+          <view class="mvv-line">• <text class="mvv-highlight">专业</text>：每一款产品都经过严谨的研发与测试</view>
+          <view class="mvv-line">• <text class="mvv-highlight">长期主义</text>：做耐用的产品，做值得长期信任的品牌</view>
+        </view>
       </view>
     </view>
   </view>
