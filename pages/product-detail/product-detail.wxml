@@ -52,6 +52,13 @@
       </view>
     </view>
 
+    <!-- 选购配置 -->
+    <view wx:if="{{options.length}}" class="container section">
+      <view class="section-title">选购配置</view>
+      <view class="section-divider"></view>
+      <option-selector options="{{options}}" bind:change="onOptionChange" />
+    </view>
+
     <!-- 产品特点 -->
     <view class="container section">
       <view class="section-title">产品特点</view>

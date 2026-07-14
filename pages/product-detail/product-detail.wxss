@@ -349,3 +349,5 @@
 .detail-page {
   padding-bottom: 120rpx;
 }
+
+/* 选购配置区（样式主要在 option-selector 组件内） */

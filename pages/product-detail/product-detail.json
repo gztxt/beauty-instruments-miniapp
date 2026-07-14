@@ -4,5 +4,7 @@
   "navigationBarTextStyle": "white",
   "backgroundColor": "#f5f0e8",
   "backgroundTextStyle": "dark",
-  "usingComponents": {}
+  "usingComponents": {
+    "option-selector": "/components/option-selector/option-selector"
+  }
 }
