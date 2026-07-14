@@ -121,11 +121,18 @@ def stage1_plan(requirement: str, source_files: List[Path], cache_dir: Path, rou
 
 def stage2_codex(plan: str, repo_path: Path, cache_dir: Path, round_id: str) -> str:
     """阶段2：Codex 执行 → [[CODE_DIFF]]（需 git 仓库 + pty）"""
-    # 备份
+    # 备份（仅源码目录，跳过 node_modules/.git/.pipeline_cache 及已有 .bak，避免海量冗余备份）
+    _BACKUP_SKIP = {".git", "node_modules", "__pycache__", ".pytest_cache", ".pipeline_cache"}
+    _bak_ts = datetime.now().strftime("%Y%m%d%H%M%S")
     for f in repo_path.rglob("*"):
-        if f.is_file() and not f.name.startswith("."):
-            bak = f.with_suffix(f.suffix + f".bak.{datetime.now():%Y%m%d%H%M%S}")
-            bak.write_bytes(f.read_bytes())
+        if not f.is_file() or f.name.startswith("."):
+            continue
+        if any(p in _BACKUP_SKIP for p in f.relative_to(repo_path).parts):
+            continue
+        if ".bak." in f.name:
+            continue
+        bak = f.with_suffix(f.suffix + f".bak.{_bak_ts}")
+        bak.write_bytes(f.read_bytes())
 
     # 构造 Codex prompt
     prompt = f"""{plan}
