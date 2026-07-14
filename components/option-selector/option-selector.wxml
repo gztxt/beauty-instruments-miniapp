@@ -1,0 +1,31 @@
+<view class="opt-selector">
+  <view class="opt-dim" wx:for="{{options}}" wx:for-item="dim" wx:key="key">
+    <view class="opt-dim-head">
+      <text class="opt-dim-name">{{dim.name}}</text>
+      <text wx:if="{{dim.required}}" class="opt-required">必选</text>
+    </view>
+    <view class="opt-values">
+      <view
+        class="opt-value {{selected[dim.key] === val.id ? 'opt-value--active' : ''}}"
+        wx:for="{{dim.values}}" wx:for-item="val" wx:key="id"
+        data-key="{{dim.key}}" data-id="{{val.id}}"
+        bindtap="onSelect"
+      >
+        <text class="opt-value-icon">{{val.icon}}</text>
+        <view class="opt-value-info">
+          <text class="opt-value-label">{{val.label}}</text>
+          <text class="opt-value-desc">{{val.desc}}</text>
+        </view>
+        <text wx:if="{{selected[dim.key] === val.id}}" class="opt-check">✓</text>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{summary.length}}" class="opt-summary card">
+    <view class="opt-summary-title">已选配置</view>
+    <view class="opt-summary-item" wx:for="{{summary}}" wx:key="key">
+      <text class="opt-summary-name">{{item.name}}</text>
+      <text class="opt-summary-label">{{item.label}}</text>
+    </view>
+  </view>
+</view>
