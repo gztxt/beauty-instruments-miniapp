@@ -20,3 +20,7 @@ ehthumbs.db
 runs/
 .pipeline_cache/
 *.bak.*
+
+# Python cache
+__pycache__/
+*.pyc
