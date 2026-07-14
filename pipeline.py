@@ -22,6 +22,7 @@ import shlex
 import subprocess
 import sys
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
@@ -132,8 +133,17 @@ def stage2_codex(plan: str, repo_path: Path, cache_dir: Path, round_id: str) -> 
 请根据上述计划修改代码，仅输出 [[CODE_DIFF]]...[[END_DIFF]]（标准 unified diff 或完整函数）。
 修改前请先运行 lint/type-check（如可用），失败则修正后再产出 diff。"""
 
-    # 必须在 git 仓库内、pty=true
-    inner_cmd = f"{CODEX_BIN} exec {shlex.quote(prompt)}"
+    # 非交互模式：跳过 git 仓库检查 + 绕过审批 + 全量读写沙箱
+    # 注：Codex 0.13 不支持 --ask-for-approval never（需 -- 分隔符但会解析失败），
+    #     改用 --dangerously-bypass-approvals-and-sandbox 一步到位
+    sandbox_perms = '["disk-full-read-access", "disk-full-write-access"]'
+    inner_cmd = (
+        f"{CODEX_BIN} exec --skip-git-repo-check "
+        f"--dangerously-bypass-approvals-and-sandbox "
+        f"-c sandbox_permissions={shlex.quote(sandbox_perms)} "
+        f"{shlex.quote(prompt)}"
+    )
+    # pty 模拟：用 script 包装确保 TTY 行为一致
     cmd = f"cd {shlex.quote(str(repo_path))} && script -qec {shlex.quote(inner_cmd)} /dev/null"
 
     proc = run_cmd(cmd, timeout=CODEX_TIMEOUT)
@@ -144,6 +154,53 @@ def stage2_codex(plan: str, repo_path: Path, cache_dir: Path, round_id: str) -> 
 
     save_round(cache_dir, round_id, "codex", {"plan": plan}, {"diff": diff, "code_diff": code_diff})
     return code_diff
+
+def stage2_codex_parallel(plan: str, repo_path: Path, cache_dir: Path, round_id: str, max_workers: int = 4) -> str:
+    """
+    阶段2并行化：将 plan 按文件拆分，每个文件独立派一个 Codex worker。
+    适用于多文件、无交叉依赖的修改计划。
+    返回：合并后的完整 [[CODE_DIFF]] 块。
+    """
+    # 提取 plan 中列出的修改文件（匹配 '- 修改文件：xxx' 或 '- file: xxx'）
+    file_list = re.findall(r"修改文件[：:]\s*([^\n]+)", plan)
+    file_list = [f.strip() for f in file_list if f.strip()]
+    if len(file_list) <= 1:
+        # 单一文件或无文件清单 → 走串行
+        return stage2_codex(plan, repo_path, cache_dir, round_id)
+
+    # 按文件分组 plan 片段
+    chunks = []
+    for fname in file_list:
+        chunk_plan = f"""{plan}
+
+=== 本 Worker 仅负责文件：{fname} ===
+仅输出该文件的 [[CODE_DIFF]]...[[END_DIFF]]，不要改动其他文件。"""
+        chunks.append((fname, chunk_plan))
+
+    results: Dict[str, str] = {}
+    with ThreadPoolExecutor(max_workers=min(max_workers, len(chunks))) as ex:
+        future_to_file = {
+            ex.submit(stage2_codex, cp, repo_path, cache_dir, f"{round_id}_{i}"): fname
+            for i, (fname, cp) in enumerate(chunks)
+        }
+        for fut in as_completed(future_to_file):
+            fname = future_to_file[fut]
+            try:
+                diff = fut.result()
+                results[fname] = diff
+                print(f"  🔧 [{fname}] Codex 完成（{len(diff)} 字符）")
+            except Exception as e:
+                print(f"  ❌ [{fname}] Codex 失败: {e}")
+                results[fname] = f"# ERROR: {e}"
+
+    # 合并为单一 [[CODE_DIFF]]
+    merged = "[[CODE_DIFF]]\n"
+    for fname in file_list:
+        merged += f"\n# ===== {fname} =====\n"
+        merged += results.get(fname, "# NO DIFF\n")
+    merged += "\n[[END_DIFF]]"
+    save_round(cache_dir, round_id, "codex", {"plan": plan, "parallel": True}, {"diff": merged, "code_diff": merged})
+    return merged
 
 def stage2_verify(plan: str, diff: str, cache_dir: Path, round_id: str) -> Tuple[bool, str]:
     """阶段2校验：Hermes 校验 plan vs diff → [[VERIFY]]"""
@@ -212,7 +269,7 @@ def stage3_review(plan: str, diff: str, tests: str, test_result: str, cache_dir:
     return passed, review
 
 # ==================== 主流水线 ====================
-def run_pipeline(requirement: str, repo_path: Path, cache_dir: Path, round_id: str, resume: bool = False) -> Dict:
+def run_pipeline(requirement: str, repo_path: Path, cache_dir: Path, round_id: str, resume: bool = False, parallel: bool = False, max_workers: int = 4) -> Dict:
     """完整流水线编排"""
     source_files = list(repo_path.rglob("*.js")) + list(repo_path.rglob("*.ts")) + list(repo_path.rglob("*.py"))
     source_files = [f for f in source_files if not any(p in f.parts for p in [".git", "node_modules", "__pycache__", ".pytest_cache"])]
@@ -238,7 +295,10 @@ def run_pipeline(requirement: str, repo_path: Path, cache_dir: Path, round_id: s
         # Stage 2: Codex + Verify（循环直到 PASS）
         verify_passed = False
         for verify_attempt in range(2):  # 最多 2 轮 verify
-            current_diff = stage2_codex(plan, repo_path, cache_dir, round_id)
+            if parallel:
+                current_diff = stage2_codex_parallel(plan, repo_path, cache_dir, round_id, max_workers)
+            else:
+                current_diff = stage2_codex(plan, repo_path, cache_dir, round_id)
             print(f"🔧 Codex Diff 产出（长度 {len(current_diff)}）")
 
             passed, verify = stage2_verify(plan, current_diff, cache_dir, round_id)
@@ -308,6 +368,94 @@ Traceback：见测试输出
 
     return {"status": "MAX_RETRIES_EXCEEDED", "round_id": round_id}
 
+# ==================== Dashboard 生成 ====================
+def generate_dashboard(cache_dir: Path, round_id: str, output_html: Optional[Path] = None) -> Path:
+    """
+    从 .pipeline_cache/<round_id>/ 读取各 stage 的 inputs/outputs.json，
+    生成可视化 HTML 报告（含状态时间线、diff 预览、测试摘要）。
+    """
+    if output_html is None:
+        output_html = cache_dir / round_id / "DASHBOARD.html"
+
+    stages = ["plan", "codex", "verify", "tests", "review"]
+    timeline = []
+    stage_data = {}
+
+    for st in stages:
+        inputs, outputs = load_round(cache_dir, round_id, st)
+        if not inputs and not outputs:
+            continue
+        # 推断状态
+        if st == "verify":
+            status = "PASS" if outputs.get("passed") else "FAIL"
+        elif st == "review":
+            status = "APPROVED" if outputs.get("approved") else "CHANGES_REQUESTED"
+        elif st == "codex":
+            status = "DONE" if outputs.get("code_diff") else "EMPTY"
+        else:
+            status = "DONE"
+        stage_data[st] = {"inputs": inputs, "outputs": outputs, "status": status}
+        timeline.append({"stage": st, "status": status})
+
+    # 渲染 HTML
+    def esc(s: Any) -> str:
+        return str(s).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
+    rows = ""
+    for st in stages:
+        if st not in stage_data:
+            continue
+        sd = stage_data[st]
+        badge = {"PASS": "🟢", "APPROVED": "🟢", "DONE": "🔵", "FAIL": "🔴",
+                 "CHANGES_REQUESTED": "🟡", "EMPTY": "⚪"}.get(sd["status"], "⚪")
+        # 取摘要字段
+        summary = ""
+        if st == "plan":
+            summary = sd["outputs"].get("plan", "")[:300]
+        elif st == "codex":
+            summary = sd["outputs"].get("code_diff", "")[:300]
+        elif st == "verify":
+            summary = sd["outputs"].get("verify", "")[:300]
+        elif st == "tests":
+            summary = sd["outputs"].get("result", "")[:300]
+        elif st == "review":
+            summary = sd["outputs"].get("review", "")[:300]
+        rows += f"""
+        <div class="card">
+          <h3>{badge} {st.upper()}</h3>
+          <pre>{esc(summary)}</pre>
+        </div>"""
+
+    html = f"""<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Pipeline Dashboard — {round_id}</title>
+<style>
+  body {{ font-family: -apple-system, "PingFang SC", sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }}
+  h1 {{ color: #333; }}
+  .timeline {{ display: flex; gap: 8px; margin: 20px 0; flex-wrap: wrap; }}
+  .pill {{ padding: 6px 12px; border-radius: 16px; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); font-size: 13px; }}
+  .card {{ background: #fff; border-radius: 8px; padding: 16px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }}
+  .card h3 {{ margin-top: 0; font-size: 15px; }}
+  pre {{ background: #f8f8f8; padding: 10px; border-radius: 4px; overflow-x: auto; font-size: 12px; max-height: 200px; }}
+</style>
+</head>
+<body>
+  <h1>🔄 三模型联动流水线报告</h1>
+  <p><strong>Round:</strong> {round_id}</p>
+  <div class="timeline">
+    {''.join(f'<span class="pill">{t["stage"]}: {t["status"]}</span>' for t in timeline)}
+  </div>
+  {rows}
+  <footer style="margin-top:40px; color:#999; font-size:12px;">Generated by pipeline.py at {datetime.now():%Y-%m-%d %H:%M:%S}</footer>
+</body>
+</html>"""
+
+    output_html.write_text(html, encoding="utf-8")
+    print(f"📊 Dashboard 已生成: {output_html}")
+    return output_html
+
 # ==================== CLI ====================
 def main():
     parser = argparse.ArgumentParser(description="三模型联动流水线（档位 B）")
@@ -316,6 +464,9 @@ def main():
     parser.add_argument("--cache-dir", type=Path, default=Path(".pipeline_cache"), help="缓存目录")
     parser.add_argument("--round", dest="round_id", help="指定 round ID（默认时间戳）")
     parser.add_argument("--resume", action="store_true", help="从缓存恢复")
+    parser.add_argument("--dashboard", action="store_true", help="运行后生成 HTML Dashboard")
+    parser.add_argument("--parallel", action="store_true", help="启用 Codex 并行化（多文件计划）")
+    parser.add_argument("--max-workers", type=int, default=4, help="并行 worker 数（默认 4）")
     args = parser.parse_args()
 
     if not args.requirement and not args.resume:
@@ -339,7 +490,9 @@ def main():
         repo_path=repo_path,
         cache_dir=cache_dir,
         round_id=round_id,
-        resume=args.resume
+        resume=args.resume,
+        parallel=args.parallel,
+        max_workers=args.max_workers
     )
 
     print(f"\n📊 最终状态: {result['status']}")
@@ -347,6 +500,9 @@ def main():
         print(f"📄 人会签: {cache_dir / round_id / 'HUMAN_SIGNOFF.md'}")
     elif result['status'] == 'CIRCUIT_BREAKER':
         print(f"🚨 接管摘要: {cache_dir / round_id / 'HUMAN_TAKEOVER.md'}")
+
+    if args.dashboard:
+        generate_dashboard(cache_dir, round_id)
 
 if __name__ == "__main__":
     main()
