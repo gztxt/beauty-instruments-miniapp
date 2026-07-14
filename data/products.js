@@ -33,6 +33,21 @@ const beautyDevices = [
       { icon: '💼', text: '出差旅行便携' },
       { icon: '💆', text: '美容院线使用' },
       { icon: '🎁', text: '节日礼品首选' }
+    ],
+    options: [
+      { key: 'chassis', name: '机箱样式', required: true, values: [
+        { id: 'c1', label: '标准铝合金', desc: '阳极氧化银灰', icon: '🔲' },
+        { id: 'c2', label: '高光烤漆白', desc: '钢琴烤漆白色', icon: '⬜' },
+        { id: 'c3', label: '碳纤纹黑', desc: '哑光碳纤维纹', icon: '⬛' }
+      ]},
+      { key: 'handle', name: '手柄样式', required: true, values: [
+        { id: 'h1', label: '直柄经典', desc: '直握人体工学', icon: '🖊️' },
+        { id: 'h2', label: '弯柄贴面', desc: '弧形贴合面部', icon: '🪝' }
+      ]},
+      { key: 'bracket', name: '支架样式', required: false, values: [
+        { id: 'b0', label: '不需要', desc: '仅主机', icon: '🚫' },
+        { id: 'b1', label: '桌面立式', desc: '铝合金桌架', icon: '🗼' }
+      ]}
     ]
   },
   {
@@ -57,6 +72,22 @@ const beautyDevices = [
       { icon: '👩', text: '抗初老护理' },
       { icon: '💆', text: '面部提升紧致' },
       { icon: '🏠', text: '居家美容护理' }
+    ],
+    options: [
+      { key: 'chassis', name: '机箱样式', required: true, values: [
+        { id: 'c1', label: '标准铝合金', desc: '阳极氧化银灰', icon: '🔲' },
+        { id: 'c2', label: '高光烤漆白', desc: '钢琴烤漆白色', icon: '⬜' }
+      ]},
+      { key: 'handle', name: '手柄样式', required: true, values: [
+        { id: 'h1', label: '直柄经典', desc: '直握人体工学', icon: '🖊️' },
+        { id: 'h2', label: '弯柄贴面', desc: '弧形贴合面部', icon: '🪝' },
+        { id: 'h3', label: '双头手柄', desc: '一机双探头', icon: '🔱' }
+      ]},
+      { key: 'bracket', name: '支架样式', required: false, values: [
+        { id: 'b0', label: '不需要', desc: '仅主机', icon: '🚫' },
+        { id: 'b1', label: '桌面立式', desc: '铝合金桌架', icon: '🗼' },
+        { id: 'b2', label: '滚轮推车', desc: '带轮移动推车', icon: '🛒' }
+      ]}
     ]
   },
   {
@@ -82,6 +113,20 @@ const beautyDevices = [
       { icon: '👨', text: '男士紧致' },
       { icon: '💆', text: '面部提升' },
       { icon: '🏥', text: '术后修复' }
+    ],
+    options: [
+      { key: 'chassis', name: '机箱样式', required: true, values: [
+        { id: 'c1', label: '标准铝合金', desc: '阳极氧化银灰', icon: '🔲' },
+        { id: 'c3', label: '碳纤纹黑', desc: '哑光碳纤维纹', icon: '⬛' }
+      ]},
+      { key: 'handle', name: '手柄样式', required: true, values: [
+        { id: 'h2', label: '弯柄贴面', desc: '弧形贴合面部', icon: '🪝' },
+        { id: 'h3', label: '双头手柄', desc: '一机双探头', icon: '🔱' }
+      ]},
+      { key: 'bracket', name: '支架样式', required: false, values: [
+        { id: 'b0', label: '不需要', desc: '仅主机', icon: '🚫' },
+        { id: 'b1', label: '桌面立式', desc: '铝合金桌架', icon: '🗼' }
+      ]}
     ]
   },
   {
@@ -441,11 +486,22 @@ function getCategoryName(categoryIndex) {
   return CATEGORY_NAMES[categoryIndex] || '';
 }
 
+/**
+ * 获取指定产品的选配维度
+ * @param {number} id 产品 ID
+ * @returns {object[]} 选配维度数组，未配置则返回空数组
+ */
+function getProductOptions(id) {
+  const p = findProductById(id);
+  return (p && Array.isArray(p.options)) ? p.options : [];
+}
+
 module.exports = {
   productsByCategory,
   CATEGORY_NAMES,
   CATEGORY_KEYS,
   findProductById,
   getProductsByCategory,
-  getCategoryName
+  getCategoryName,
+  getProductOptions
 };
