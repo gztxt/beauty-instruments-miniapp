@@ -3,6 +3,7 @@ const app = getApp();
 Page({
   data: {
     companyInfo: {},
+    inquiryConfig: null,
     milestones: [
       { year: '2015', desc: '采薇品牌创立，落户广州番禺，专注于家用美容仪器研发' },
       { year: '2017', desc: '首款智能皮肤检测仪上市，获天猫美容仪器品类新品销量TOP3' },
@@ -21,6 +22,13 @@ Page({
   onLoad: function () {
     this.setData({
       companyInfo: app.globalData.companyInfo
+    });
+  },
+
+  onShow: function () {
+    const cfg = wx.getStorageSync('inquiryConfig');
+    this.setData({
+      inquiryConfig: (cfg && cfg.summary && cfg.summary.length) ? cfg : null
     });
   },
 
@@ -124,6 +132,33 @@ Page({
       });
     };
     doCopy();
+  },
+
+  /** 复制咨询配置文本到剪贴板 */
+  copyInquiryConfig: function () {
+    const cfg = this.data.inquiryConfig;
+    if (!cfg || !cfg.summary || !cfg.summary.length) {
+      wx.showToast({ title: '暂无配置', icon: 'none' });
+      return;
+    }
+    const lines = cfg.summary.map(function (s) { return s.name + '：' + s.label; });
+    const text = '【咨询配置】' + cfg.productName + '\n' + lines.join('\n');
+    wx.setClipboardData({
+      data: text,
+      success: function () {
+        wx.showToast({ title: '配置已复制', icon: 'success', duration: 2000 });
+      },
+      fail: function () {
+        wx.showToast({ title: '复制失败，请稍后再试', icon: 'none' });
+      }
+    });
+  },
+
+  /** 清除咨询配置 */
+  clearInquiryConfig: function () {
+    wx.removeStorageSync('inquiryConfig');
+    this.setData({ inquiryConfig: null });
+    wx.showToast({ title: '已清除', icon: 'success', duration: 1500 });
   },
 
   onShareAppMessage: function () {

@@ -98,6 +98,23 @@
   <view class="container section contact-section">
     <view class="section-title">联系我们</view>
     <view class="section-divider"></view>
+
+    <!-- 您咨询的产品配置（来自详情页选配） -->
+    <view class="inquiry-card card" wx:if="{{inquiryConfig}}">
+      <view class="inquiry-head">
+        <text class="inquiry-title">您咨询的产品配置</text>
+        <text class="inquiry-clear" bindtap="clearInquiryConfig">清除</text>
+      </view>
+      <view class="inquiry-product">{{inquiryConfig.productName}}</view>
+      <view class="inquiry-list">
+        <view class="inquiry-row" wx:for="{{inquiryConfig.summary}}" wx:key="key">
+          <text class="inquiry-dim">{{item.name}}</text>
+          <text class="inquiry-val">{{item.label}}</text>
+        </view>
+      </view>
+      <button class="inquiry-copy-btn" bindtap="copyInquiryConfig">📋 复制配置发给客服</button>
+    </view>
+
     <view class="contact-card card">
       <view class="contact-row">
         <text class="contact-label">公司</text>
