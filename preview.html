@@ -769,9 +769,9 @@ function renderTabbar(active) {
     {svg:'<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 81 81" fill="none"><rect x="23.5" y="20.5" width="34" height="17" rx="2.5" stroke="currentColor" stroke-width="4"/><rect x="13.5" y="37.5" width="54" height="34" rx="2.5" stroke="currentColor" stroke-width="4"/></svg>',name:'关于我们'}
   ];
   return `
-    <div class="tabbar">
+    <div class="tabbar" style="display:flex;flex-direction:row">
       ${tabs.map((t,i) => `
-        <div class="tab-item${i===active?' active':''}" onclick="switchTab(${i})">
+        <div class="tab-item${i===active?' active':''}" onclick="switchTab(${i})" style="display:flex;flex:1;flex-direction:column;align-items:center;justify-content:center;min-width:0">
           <div class="tab-icon">${t.svg}</div>
           <div class="tab-label">${t.name}</div>
         </div>
