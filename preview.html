@@ -757,10 +757,12 @@ function renderAbout() {
 }
 
 function renderTabbar(active) {
+  // 复用 images/ 下的 SVG（需由服务器静态托管），改为直接引用文件路径
+  // 由于预览页是纯前端 HTML，无法直接 require 文件，这里把 images/ 下 SVG 内容内联同步
   const tabs = [
-    {svg:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-5h4v5h4a1 1 0 0 0 1-1v-9"/></svg>',name:'首页'},
-    {svg:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>',name:'产品中心'},
-    {svg:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 12l0 4"/><path d="M12 8l0 0.01"/></svg>',name:'关于我们'}
+    {svg:'<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 81 81" fill="none"><path d="M13.5 37L40.5 13.5L67.5 37V67.5C67.5 69.433 66.433 71 64.5 71H16.5C14.567 71 13.5 69.433 13.5 67.5V37Z" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/><path d="M30 71V47.5H51V71" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/></svg>',name:'首页'},
+    {svg:'<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 81 81" fill="none"><path d="M13.5 27L40.5 13.5L67.5 27V60.75C67.5 62.683 66.433 64.25 64.5 64.25H16.5C14.567 64.25 13.5 62.683 13.5 60.75V27Z" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/><path d="M13.5 27L40.5 40.5L67.5 27" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/><line x1="40.5" y1="40.5" x2="40.5" y2="64.25" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></svg>',name:'产品中心'},
+    {svg:'<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 81 81" fill="none"><rect x="23.5" y="20.5" width="34" height="17" rx="2.5" stroke="currentColor" stroke-width="4"/><rect x="13.5" y="37.5" width="54" height="34" rx="2.5" stroke="currentColor" stroke-width="4"/></svg>',name:'关于我们'}
   ];
   return `
     <div class="tabbar">
