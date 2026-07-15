@@ -21,24 +21,20 @@
   --border: #e8e0d4;
   --radius: 12px;
   --safe-bottom: env(safe-area-inset-bottom, 0px);
-  /* 底栏高度（图标+文字+内边距）+ 内容与底栏间距 */
+  /* 底栏实测高度：图标+文字+内边距；再留出内容呼吸区 */
   --tabbar-h: 58px;
-  --page-bottom-gap: 32px;
-  --content-bottom: calc(var(--tabbar-h) + var(--safe-bottom) + var(--page-bottom-gap));
+  --page-bottom-gap: 28px;
 }
-/* 禁止 height:100% 锁死 body：否则 overflow 滚动时 body padding 常被忽略，导致底栏遮挡 */
-html { height: 100%; }
+html, body { height: 100%; }
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
   background: var(--bg);
   color: var(--text);
   max-width: 420px;
   margin: 0 auto;
-  min-height: 100%;
   min-height: 100vh;
-  min-height: 100dvh;
-  height: auto;
-  padding-bottom: 0;
+  /* 保证滚到底时内容不被固定菜单遮挡 */
+  padding-bottom: calc(var(--tabbar-h) + var(--safe-bottom) + var(--page-bottom-gap));
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
 }
@@ -167,16 +163,7 @@ img { max-width: 100%; }
   padding: 16px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
-/* 三 Tab 页内容底部再留一点，避免 CTA/页脚贴边 */
-.page-pad-bottom { padding-bottom: 12px; }
-/* 固定底栏前的文档流占位条（主修复：保证首页/产品/关于滚到底不被挡） */
-.tabbar-spacer {
-  height: var(--content-bottom);
-  width: 100%;
-  flex-shrink: 0;
-  pointer-events: none;
-  visibility: hidden;
-}
+.page-pad-bottom { padding-bottom: 16px; }
 
 /* 快速数据 */
 .quick-stats {
@@ -550,9 +537,9 @@ img { max-width: 100%; }
   border-top: 1px solid rgba(0,0,0,0.06); z-index: 90;
   box-sizing: border-box;
 }
-/* 详情页：咨询条 fixed 在 Tab 上方，额外为咨询条高度留白（Tab 占位由 #app / spacer 负责） */
+/* 详情页内容为固定底栏 + Tab 预留空间，避免最后一块被挡住 */
 .detail-page.page-pad-bottom {
-  padding-bottom: calc(72px + 12px);
+  padding-bottom: calc(64px + var(--tabbar-h) + var(--safe-bottom) + 16px);
 }
 .detail-bar .btn-outline {
   flex: 1; padding: 12px; border: 1px solid var(--primary); border-radius: 24px;
@@ -695,7 +682,6 @@ function renderTabbar(active) {
     { svg: '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 81 81" fill="none" aria-hidden="true"><rect x="23.5" y="20.5" width="34" height="17" rx="2.5" stroke="currentColor" stroke-width="4"/><rect x="13.5" y="37.5" width="54" height="34" rx="2.5" stroke="currentColor" stroke-width="4"/></svg>', name: '关于我们' }
   ];
   return `
-    <div class="tabbar-spacer" aria-hidden="true"></div>
     <nav class="tabbar" role="tablist" aria-label="主导航">
       ${tabs.map((t, i) => `
         <button type="button" class="tabbar-item${i === active ? ' active' : ''}"

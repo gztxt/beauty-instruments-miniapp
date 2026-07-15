@@ -21,30 +21,18 @@
   --border: #e8e0d4;
   --radius: 12px;
   --safe-bottom: env(safe-area-inset-bottom, 0px);
-  /* 底栏高度（图标+文字+内边距）+ 内容与底栏间距 */
-  --tabbar-h: 58px;
-  --page-bottom-gap: 32px;
-  --content-bottom: calc(var(--tabbar-h) + var(--safe-bottom) + var(--page-bottom-gap));
 }
-/* 禁止 height:100% 锁死 body：否则 overflow 滚动时 body padding 常被忽略，导致底栏遮挡 */
-html { height: 100%; }
+html, body { height: 100%; }
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
   background: var(--bg);
   color: var(--text);
   max-width: 420px;
   margin: 0 auto;
-  min-height: 100%;
   min-height: 100vh;
-  min-height: 100dvh;
-  height: auto;
-  padding-bottom: 0;
+  padding-bottom: calc(64px + var(--safe-bottom));
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
-}
-#app {
-  min-height: 100%;
-  box-sizing: border-box;
 }
 button { font-family: inherit; }
 img { max-width: 100%; }
@@ -167,16 +155,7 @@ img { max-width: 100%; }
   padding: 16px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
-/* 三 Tab 页内容底部再留一点，避免 CTA/页脚贴边 */
-.page-pad-bottom { padding-bottom: 12px; }
-/* 固定底栏前的文档流占位条（主修复：保证首页/产品/关于滚到底不被挡） */
-.tabbar-spacer {
-  height: var(--content-bottom);
-  width: 100%;
-  flex-shrink: 0;
-  pointer-events: none;
-  visibility: hidden;
-}
+.page-pad-bottom { padding-bottom: 8px; }
 
 /* 快速数据 */
 .quick-stats {
@@ -227,38 +206,62 @@ img { max-width: 100%; }
 .adv-title { font-size: 13px; font-weight: 600; color: var(--primary); margin-bottom: 4px; }
 .adv-desc { font-size: 11px; color: var(--text-light); line-height: 1.5; }
 
-/* 可定制角标（热销/主打共用） */
-.customizable-tag {
-  position: absolute; top: 8px; right: 8px;
-  background: var(--primary); color: #fff;
-  font-size: 10px; line-height: 1; padding: 4px 8px; border-radius: 10px; z-index: 2;
+/* 热销横向 */
+.hot-scroll {
+  overflow-x: auto; overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  margin: 0 -16px; padding: 4px 16px 12px;
+  scrollbar-width: none;
 }
+.hot-scroll::-webkit-scrollbar { display: none; }
+.hot-track { display: flex; gap: 12px; width: max-content; }
+.hot-item {
+  width: 148px; flex-shrink: 0; padding: 0; overflow: hidden; cursor: pointer;
+  transition: transform 0.2s;
+}
+.hot-item:active { transform: scale(0.96); }
+.hot-img-wrap { position: relative; height: 110px; }
+.hot-img {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; color: rgba(255,255,255,0.85); font-weight: 600;
+}
+.img-hot-0 { background: linear-gradient(135deg, #2d5016, #4a7a2e); }
+.img-hot-1 { background: linear-gradient(135deg, #c9a84c, #d4b85a); color: #2d5016 !important; }
+.img-hot-2 { background: linear-gradient(135deg, #3d6b22, #5a8f3a); }
+.img-hot-3 { background: linear-gradient(135deg, #1e3a0e, #2d5016); }
+.img-hot-4 { background: linear-gradient(135deg, #4a7a2e, #6a9f4a); }
+.img-hot-5 { background: linear-gradient(135deg, #1e3a0e, #2d5016); }
+.img-hot-6 { background: linear-gradient(135deg, #3a6b1e, #c9a84c); }
 .hot-badge {
   position: absolute; top: 8px; left: 8px;
   background: var(--accent); color: #fff;
   font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 10px; z-index: 2;
 }
+.customizable-tag {
+  position: absolute; top: 8px; right: 8px;
+  background: var(--primary); color: #fff;
+  font-size: 10px; line-height: 1; padding: 4px 8px; border-radius: 10px; z-index: 2;
+}
+.hot-info { padding: 10px 12px 12px; }
+.hot-name {
+  font-size: 13px; font-weight: 600; margin-bottom: 2px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.hot-model { font-size: 11px; color: var(--accent); margin-bottom: 4px; }
+.hot-tag {
+  display: inline-block; font-size: 10px; color: var(--primary);
+  background: rgba(45,80,22,0.08); padding: 1px 8px; border-radius: 8px;
+}
 
-/* 主打产品 / 热销推荐：统一两列网格与卡片尺寸（并列仅 2 款完整显示） */
-.featured-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-  width: 100%;
-}
-.featured-item {
-  overflow: hidden;
-  cursor: pointer;
-  padding: 0;
-  transition: transform 0.2s;
-  min-width: 0; /* 防止网格子项撑破导致第三列裁切感 */
-}
+/* 主打产品 */
+.featured-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.featured-item { overflow: hidden; cursor: pointer; padding: 0; transition: transform 0.2s; }
 .featured-item:active { transform: scale(0.96); }
 .featured-img {
   position: relative; width: 100%; height: 100px;
   display: flex; align-items: center; justify-content: center;
   font-size: 12px; color: var(--primary-light); font-weight: 600;
-  overflow: hidden;
 }
 .fi-0 { background: linear-gradient(135deg, #f5f0e8, #e0d5c4); }
 .fi-1 { background: linear-gradient(135deg, #e8f0e0, #d4e4c4); }
@@ -266,18 +269,8 @@ img { max-width: 100%; }
 .fi-3 { background: linear-gradient(135deg, #e8ece0, #d0dcc0); }
 .fi-4 { background: linear-gradient(135deg, #f5f0e8, #c9a84c33); }
 .fi-5 { background: linear-gradient(135deg, #e8f5e0, #d0e8c0); }
-.featured-name {
-  font-size: 14px; font-weight: 600; padding: 8px 12px 0;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
+.featured-name { font-size: 14px; font-weight: 600; padding: 8px 12px 0; }
 .featured-model { font-size: 12px; color: var(--accent); padding: 2px 12px 12px; }
-/* 热销在主打样式上叠加「热卖」角标，不再用横向滚动 */
-.featured-item.is-hot .featured-img.fi-0 { background: linear-gradient(135deg, #2d5016, #4a7a2e); color: rgba(255,255,255,0.9); }
-.featured-item.is-hot .featured-img.fi-1 { background: linear-gradient(135deg, #c9a84c, #d4b85a); color: #2d5016; }
-.featured-item.is-hot .featured-img.fi-2 { background: linear-gradient(135deg, #3d6b22, #5a8f3a); color: rgba(255,255,255,0.9); }
-.featured-item.is-hot .featured-img.fi-3 { background: linear-gradient(135deg, #1e3a0e, #2d5016); color: rgba(255,255,255,0.9); }
-.featured-item.is-hot .featured-img.fi-4 { background: linear-gradient(135deg, #4a7a2e, #6a9f4a); color: rgba(255,255,255,0.9); }
-.featured-item.is-hot .featured-img.fi-5 { background: linear-gradient(135deg, #3a6b1e, #c9a84c); color: rgba(255,255,255,0.9); }
 
 /* CTA */
 .cta-section {
@@ -307,12 +300,9 @@ img { max-width: 100%; }
 .tabbar {
   position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
   width: 100%; max-width: 420px;
-  height: calc(var(--tabbar-h) + var(--safe-bottom));
-  box-sizing: border-box;
-  background: rgba(255,255,255,0.96);
+  background: rgba(255,255,255,0.94);
   backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
   display: flex; flex-direction: row;
-  align-items: flex-start;
   border-top: 1px solid rgba(0,0,0,0.06);
   z-index: 100;
   padding: 6px 0 var(--safe-bottom);
@@ -320,11 +310,9 @@ img { max-width: 100%; }
 .tabbar-item {
   flex: 1 1 0; min-width: 0;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 3px; padding: 6px 4px 4px;
+  gap: 3px; padding: 6px 4px;
   font-size: 11px; color: #999; cursor: pointer; transition: color 0.25s;
   position: relative; background: none; border: none;
-  height: var(--tabbar-h);
-  box-sizing: border-box;
 }
 .tabbar-item .tab-icon { display: flex; align-items: center; justify-content: center; transition: transform 0.2s; }
 .tabbar-item:active .tab-icon { transform: scale(0.88); }
@@ -539,20 +527,11 @@ img { max-width: 100%; }
 .opt-chip-desc { font-size: 11px; color: var(--text-light); margin-top: 2px; display: block; }
 
 .detail-bar {
-  position: fixed;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: calc(var(--tabbar-h) + var(--safe-bottom));
-  width: 100%;
-  max-width: 420px;
-  display: flex; gap: 10px; padding: 10px 16px;
+  position: sticky; bottom: calc(56px + var(--safe-bottom));
+  display: flex; gap: 10px; padding: 12px 16px;
   background: rgba(255,255,255,0.96); backdrop-filter: blur(8px);
-  border-top: 1px solid rgba(0,0,0,0.06); z-index: 90;
-  box-sizing: border-box;
-}
-/* 详情页：咨询条 fixed 在 Tab 上方，额外为咨询条高度留白（Tab 占位由 #app / spacer 负责） */
-.detail-page.page-pad-bottom {
-  padding-bottom: calc(72px + 12px);
+  border-top: 1px solid rgba(0,0,0,0.06); z-index: 80;
+  margin: 16px -0 0;
 }
 .detail-bar .btn-outline {
   flex: 1; padding: 12px; border: 1px solid var(--primary); border-radius: 24px;
@@ -573,15 +552,8 @@ img { max-width: 100%; }
 
 /* 页脚 */
 .footer {
-  text-align: center;
-  padding: 24px 16px 8px;
-  margin-bottom: 8px;
+  text-align: center; padding: 24px 16px 12px;
   font-size: 12px; color: #999;
-}
-/* 产品列表最后一项也要留白（container 内） */
-.container.section:last-of-type,
-.container:last-of-type {
-  margin-bottom: 8px;
 }
 
 /* Toast */
@@ -638,8 +610,7 @@ const certifications = [
   { name: 'RoHS认证', short: 'RoHS' }
 ];
 
-/* 热销：两列完整展示，取 4 款（2×2），样式与主打一致 */
-const HOT_IDS = [2, 3, 8, 1];
+const HOT_IDS = [2, 3, 8, 1, 12, 4, 7];
 const HOT_TAGS = { 2: '新品', 3: '热销', 8: '人气', 1: '爆款', 12: '热销', 4: '人气', 7: '新品' };
 const FEATURED_IDS = [2, 3, 7, 1, 8, 12];
 
@@ -695,7 +666,6 @@ function renderTabbar(active) {
     { svg: '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 81 81" fill="none" aria-hidden="true"><rect x="23.5" y="20.5" width="34" height="17" rx="2.5" stroke="currentColor" stroke-width="4"/><rect x="13.5" y="37.5" width="54" height="34" rx="2.5" stroke="currentColor" stroke-width="4"/></svg>', name: '关于我们' }
   ];
   return `
-    <div class="tabbar-spacer" aria-hidden="true"></div>
     <nav class="tabbar" role="tablist" aria-label="主导航">
       ${tabs.map((t, i) => `
         <button type="button" class="tabbar-item${i === active ? ' active' : ''}"
@@ -772,18 +742,23 @@ function renderHome() {
       <div class="container section">
         <div class="section-title">热销推荐</div>
         <div class="section-divider"></div>
-        <div class="featured-grid">
-          ${hot.map((p, i) => `
-            <div class="card featured-item is-hot" onclick="openDetail(${p.id})" role="button" tabindex="0">
-              <div class="featured-img fi-${i % 6}">
-                ${escapeHtml(p.imgText || p.name)}
-                ${i < 2 ? '<span class="hot-badge">热卖</span>' : ''}
-                ${p.options && p.options.length ? '<span class="customizable-tag">可定制</span>' : ''}
+        <div class="hot-scroll">
+          <div class="hot-track">
+            ${hot.map((p, i) => `
+              <div class="card hot-item" onclick="openDetail(${p.id})" role="button" tabindex="0">
+                <div class="hot-img-wrap">
+                  <div class="hot-img img-hot-${i}">${escapeHtml(p.imgText || p.name)}</div>
+                  ${i < 3 ? '<span class="hot-badge">热卖</span>' : ''}
+                  ${p.options && p.options.length ? '<span class="customizable-tag">可定制</span>' : ''}
+                </div>
+                <div class="hot-info">
+                  <div class="hot-name">${escapeHtml(p.name)}</div>
+                  <div class="hot-model">${escapeHtml(p.model)}</div>
+                  <span class="hot-tag">${escapeHtml(HOT_TAGS[p.id] || '精选')}</span>
+                </div>
               </div>
-              <div class="featured-name">${escapeHtml(p.name)}</div>
-              <div class="featured-model">${escapeHtml(p.model)}${HOT_TAGS[p.id] ? ' · ' + escapeHtml(HOT_TAGS[p.id]) : ''}</div>
-            </div>
-          `).join('')}
+            `).join('')}
+          </div>
         </div>
       </div>
 
