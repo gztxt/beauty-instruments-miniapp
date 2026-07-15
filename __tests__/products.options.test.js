@@ -1,12 +1,12 @@
 /**
  * 选配功能（options）功能测试
- * 对应变更：data/products.js 为 id 1/2/3 三款仪器新增 options 选配维度，
+ * 对应变更：data/products.js 为美容仪器类 id 1~7 七款仪器新增 options 选配维度，
  *           并新增 getProductOptions(id) 工具函数（无配置时返回 []）。
  * 测试框架：jest（testEnvironment=node，jest.setup.js 已 mock 小程序全局 API）
  */
 const { findProductById, getProductOptions } = require('../data/products.js');
 
-const OPTION_PRODUCT_IDS = [1, 2, 3];
+const OPTION_PRODUCT_IDS = [1, 2, 3, 4, 5, 6, 7];
 
 // 期望的三款产品 options（逐字对齐计划/实现）
 const EXPECTED_OPTIONS = {
@@ -55,6 +55,65 @@ const EXPECTED_OPTIONS = {
       { id: 'b1', label: '桌面立式', desc: '铝合金桌架', icon: '🗼' },
     ]},
   ],
+  4: [
+    { key: 'chassis', name: '机箱样式', required: true, values: [
+      { id: 'c1', label: '标准铝合金', desc: '阳极氧化银灰', icon: '🔲' },
+      { id: 'c2', label: '高光烤漆白', desc: '钢琴烤漆白色', icon: '⬜' },
+      { id: 'c3', label: '碳纤纹黑', desc: '哑光碳纤维纹', icon: '⬛' },
+    ]},
+    { key: 'handle', name: '手柄样式', required: true, values: [
+      { id: 'h1', label: '直柄经典', desc: '直握人体工学', icon: '🖊️' },
+      { id: 'h2', label: '弯柄贴面', desc: '弧形贴合面部', icon: '🪝' },
+    ]},
+    { key: 'bracket', name: '支架样式', required: false, values: [
+      { id: 'b0', label: '不需要', desc: '仅主机', icon: '🚫' },
+      { id: 'b1', label: '桌面立式', desc: '铝合金桌架', icon: '🗼' },
+    ]},
+  ],
+  5: [
+    { key: 'chassis', name: '机箱样式', required: true, values: [
+      { id: 'c2', label: '高光烤漆白', desc: '钢琴烤漆白色', icon: '⬜' },
+      { id: 'c4', label: '马卡龙粉', desc: '磨砂樱花粉', icon: '🌸' },
+    ]},
+    { key: 'handle', name: '手柄样式', required: true, values: [
+      { id: 'h1', label: '直柄经典', desc: '直握人体工学', icon: '🖊️' },
+      { id: 'h4', label: '轻量便携', desc: '超轻旅行手柄', icon: '🪶' },
+    ]},
+    { key: 'bracket', name: '支架样式', required: false, values: [
+      { id: 'b0', label: '不需要', desc: '仅主机', icon: '🚫' },
+      { id: 'b3', label: '便携收纳盒', desc: '磁吸旅行盒', icon: '📦' },
+    ]},
+  ],
+  6: [
+    { key: 'chassis', name: '机箱样式', required: true, values: [
+      { id: 'c1', label: '标准铝合金', desc: '阳极氧化银灰', icon: '🔲' },
+      { id: 'c3', label: '碳纤纹黑', desc: '哑光碳纤维纹', icon: '⬛' },
+      { id: 'c5', label: '香槟金', desc: '电镀香槟金', icon: '🥂' },
+    ]},
+    { key: 'handle', name: '手柄样式', required: true, values: [
+      { id: 'h2', label: '弯柄贴面', desc: '弧形贴合面部', icon: '🪝' },
+      { id: 'h5', label: '双球滚珠', desc: '24K镀金滚珠', icon: '⚜️' },
+    ]},
+    { key: 'bracket', name: '支架样式', required: false, values: [
+      { id: 'b0', label: '不需要', desc: '仅主机', icon: '🚫' },
+      { id: 'b1', label: '桌面立式', desc: '铝合金桌架', icon: '🗼' },
+      { id: 'b4', label: '无线充电底座', desc: '感应充电立座', icon: '🔌' },
+    ]},
+  ],
+  7: [
+    { key: 'chassis', name: '机箱样式', required: true, values: [
+      { id: 'c1', label: '标准铝合金', desc: '阳极氧化银灰', icon: '🔲' },
+      { id: 'c4', label: '马卡龙粉', desc: '磨砂樱花粉', icon: '🌸' },
+    ]},
+    { key: 'handle', name: '手柄样式', required: true, values: [
+      { id: 'h1', label: '直柄经典', desc: '直握人体工学', icon: '🖊️' },
+      { id: 'h2', label: '弯柄贴面', desc: '弧形贴合面部', icon: '🪝' },
+    ]},
+    { key: 'bracket', name: '支架样式', required: false, values: [
+      { id: 'b0', label: '不需要', desc: '仅主机', icon: '🚫' },
+      { id: 'b3', label: '便携收纳盒', desc: '磁吸旅行盒', icon: '📦' },
+    ]},
+  ],
 };
 
 // 校验某个选配维度的结构合法性
@@ -76,14 +135,14 @@ function assertDimensionShape(dim) {
 }
 
 describe('选配功能 options 数据结构', () => {
-  test('仅 id 1/2/3 三款产品配置了 options', () => {
+  test('仅美容仪器类 id 1~7 配置了 options', () => {
     OPTION_PRODUCT_IDS.forEach(id => {
       const p = findProductById(id);
       expect(p).toBeTruthy();
       expect(Array.isArray(p.options)).toBe(true);
     });
-    // 其余产品（4..15）不应有 options 字段
-    for (let id = 4; id <= 15; id++) {
+    // 其余产品（8..15，皮肤检测/清洁护理类）不应有 options 字段
+    for (let id = 8; id <= 15; id++) {
       const p = findProductById(id);
       expect(p).toBeTruthy();
       expect(p.options).toBeUndefined();
@@ -150,7 +209,7 @@ describe('getProductOptions(id) 工具函数', () => {
   });
 
   test('未配置选项的产品返回空数组', () => {
-    for (let id = 4; id <= 15; id++) {
+    for (let id = 8; id <= 15; id++) {
       expect(getProductOptions(id)).toEqual([]);
     }
   });

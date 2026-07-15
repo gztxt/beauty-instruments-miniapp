@@ -59,9 +59,9 @@ describe('pages/product-detail - 选配交互', () => {
     expect(pageObj.data.options.map(o => o.key)).toEqual(['chassis', 'handle', 'bracket']);
   });
 
-  test('onLoad 无选配的产品(id=4) options 为空', () => {
-    pageObj.onLoad.call(pageObj, { id: '4' });
-    expect(pageObj.data.product.id).toBe(4);
+  test('onLoad 无选配的产品(id=8) options 为空', () => {
+    pageObj.onLoad.call(pageObj, { id: '8' });
+    expect(pageObj.data.product.id).toBe(8);
     expect(pageObj.data.options).toEqual([]);
   });
 
