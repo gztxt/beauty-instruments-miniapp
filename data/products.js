@@ -314,6 +314,20 @@ const skinDevices = [
       { icon: '💆', text: '美容院线' },
       { icon: '🏪', text: '护肤品门店' },
       { icon: '🏥', text: '皮肤管理中心' }
+    ],
+    options: [
+      { key: 'chassis', name: '机箱样式', required: true, values: [
+        { id: 'c2', label: '高光烤漆白', desc: '钢琴烤漆白色', icon: '⬜' },
+        { id: 'c4', label: '马卡龙粉', desc: '磨砂樱花粉', icon: '🌸' }
+      ]},
+      { key: 'handle', name: '手柄样式', required: true, values: [
+        { id: 'h1', label: '直柄经典', desc: '直握人体工学', icon: '🖊️' },
+        { id: 'h4', label: '轻量便携', desc: '超轻旅行手柄', icon: '🪶' }
+      ]},
+      { key: 'bracket', name: '支架样式', required: false, values: [
+        { id: 'b0', label: '不需要', desc: '仅主机', icon: '🚫' },
+        { id: 'b3', label: '便携收纳盒', desc: '磁吸旅行盒', icon: '📦' }
+      ]}
     ]
   },
   {
@@ -339,6 +353,20 @@ const skinDevices = [
       { icon: '💆', text: '美容院检测' },
       { icon: '🏠', text: '个人皮肤管理' },
       { icon: '🔬', text: '学术研究' }
+    ],
+    options: [
+      { key: 'chassis', name: '机箱样式', required: true, values: [
+        { id: 'c1', label: '标准铝合金', desc: '阳极氧化银灰', icon: '🔲' },
+        { id: 'c3', label: '碳纤纹黑', desc: '哑光碳纤维纹', icon: '⬛' }
+      ]},
+      { key: 'handle', name: '手柄样式', required: true, values: [
+        { id: 'h1', label: '直柄经典', desc: '直握人体工学', icon: '🖊️' },
+        { id: 'h3', label: '双头手柄', desc: '一机双探头', icon: '🔱' }
+      ]},
+      { key: 'bracket', name: '支架样式', required: false, values: [
+        { id: 'b0', label: '不需要', desc: '仅主机', icon: '🚫' },
+        { id: 'b1', label: '桌面立式', desc: '铝合金桌架', icon: '🗼' }
+      ]}
     ]
   },
   {
@@ -364,6 +392,20 @@ const skinDevices = [
       { icon: '💄', text: '护肤品效果评估' },
       { icon: '🏪', text: '门店体验服务' },
       { icon: '👶', text: '婴儿皮肤护理' }
+    ],
+    options: [
+      { key: 'chassis', name: '机箱样式', required: true, values: [
+        { id: 'c2', label: '高光烤漆白', desc: '钢琴烤漆白色', icon: '⬜' },
+        { id: 'c4', label: '马卡龙粉', desc: '磨砂樱花粉', icon: '🌸' }
+      ]},
+      { key: 'handle', name: '手柄样式', required: true, values: [
+        { id: 'h1', label: '直柄经典', desc: '直握人体工学', icon: '🖊️' },
+        { id: 'h4', label: '轻量便携', desc: '超轻旅行手柄', icon: '🪶' }
+      ]},
+      { key: 'bracket', name: '支架样式', required: false, values: [
+        { id: 'b0', label: '不需要', desc: '仅主机', icon: '🚫' },
+        { id: 'b3', label: '便携收纳盒', desc: '磁吸旅行盒', icon: '📦' }
+      ]}
     ]
   },
   {
@@ -389,6 +431,20 @@ const skinDevices = [
       { icon: '✨', text: '美白产品测试' },
       { icon: '💆', text: '美容院测肤' },
       { icon: '🏪', text: '护肤品推荐' }
+    ],
+    options: [
+      { key: 'chassis', name: '机箱样式', required: true, values: [
+        { id: 'c2', label: '高光烤漆白', desc: '钢琴烤漆白色', icon: '⬜' },
+        { id: 'c5', label: '香槟金', desc: '电镀香槟金', icon: '🥂' }
+      ]},
+      { key: 'handle', name: '手柄样式', required: true, values: [
+        { id: 'h1', label: '直柄经典', desc: '直握人体工学', icon: '🖊️' },
+        { id: 'h4', label: '轻量便携', desc: '超轻旅行手柄', icon: '🪶' }
+      ]},
+      { key: 'bracket', name: '支架样式', required: false, values: [
+        { id: 'b0', label: '不需要', desc: '仅主机', icon: '🚫' },
+        { id: 'b3', label: '便携收纳盒', desc: '磁吸旅行盒', icon: '📦' }
+      ]}
     ]
   }
 ];
@@ -418,6 +474,20 @@ const cleaningDevices = [
       { icon: '💄', text: '卸妆清洁' },
       { icon: '🧑', text: '油性肌肤' },
       { icon: '👨', text: '男士护肤' }
+    ],
+    options: [
+      { key: 'chassis', name: '机箱样式', required: true, values: [
+        { id: 'c2', label: '高光烤漆白', desc: '钢琴烤漆白色', icon: '⬜' },
+        { id: 'c4', label: '马卡龙粉', desc: '磨砂樱花粉', icon: '🌸' }
+      ]},
+      { key: 'handle', name: '手柄样式', required: true, values: [
+        { id: 'h1', label: '直柄经典', desc: '直握人体工学', icon: '🖊️' },
+        { id: 'h2', label: '弯柄贴面', desc: '弧形贴合面部', icon: '🪝' }
+      ]},
+      { key: 'bracket', name: '支架样式', required: false, values: [
+        { id: 'b0', label: '不需要', desc: '仅主机', icon: '🚫' },
+        { id: 'b3', label: '便携收纳盒', desc: '磁吸旅行盒', icon: '📦' }
+      ]}
     ]
   },
   {
@@ -443,6 +513,20 @@ const cleaningDevices = [
       { icon: '👄', text: '下巴闭口' },
       { icon: '🖐️', text: '指关节护理' },
       { icon: '🧑', text: '油性T区' }
+    ],
+    options: [
+      { key: 'chassis', name: '机箱样式', required: true, values: [
+        { id: 'c1', label: '标准铝合金', desc: '阳极氧化银灰', icon: '🔲' },
+        { id: 'c3', label: '碳纤纹黑', desc: '哑光碳纤维纹', icon: '⬛' }
+      ]},
+      { key: 'handle', name: '手柄样式', required: true, values: [
+        { id: 'h1', label: '直柄经典', desc: '直握人体工学', icon: '🖊️' },
+        { id: 'h3', label: '双头手柄', desc: '一机双探头', icon: '🔱' }
+      ]},
+      { key: 'bracket', name: '支架样式', required: false, values: [
+        { id: 'b0', label: '不需要', desc: '仅主机', icon: '🚫' },
+        { id: 'b3', label: '便携收纳盒', desc: '磁吸旅行盒', icon: '📦' }
+      ]}
     ]
   },
   {
@@ -468,6 +552,21 @@ const cleaningDevices = [
       { icon: '💆', text: '美容院辅助' },
       { icon: '🌡️', text: '换季敏感' },
       { icon: '🛌', text: '睡前舒缓' }
+    ],
+    options: [
+      { key: 'chassis', name: '机箱样式', required: true, values: [
+        { id: 'c1', label: '标准铝合金', desc: '阳极氧化银灰', icon: '🔲' },
+        { id: 'c2', label: '高光烤漆白', desc: '钢琴烤漆白色', icon: '⬜' }
+      ]},
+      { key: 'handle', name: '手柄样式', required: true, values: [
+        { id: 'h1', label: '直柄经典', desc: '直握人体工学', icon: '🖊️' },
+        { id: 'h2', label: '弯柄贴面', desc: '弧形贴合面部', icon: '🪝' }
+      ]},
+      { key: 'bracket', name: '支架样式', required: false, values: [
+        { id: 'b0', label: '不需要', desc: '仅主机', icon: '🚫' },
+        { id: 'b1', label: '桌面立式', desc: '铝合金桌架', icon: '🗼' },
+        { id: 'b2', label: '滚轮推车', desc: '带轮移动推车', icon: '🛒' }
+      ]}
     ]
   },
   {
@@ -493,6 +592,20 @@ const cleaningDevices = [
       { icon: '🦶', text: '身体护理' },
       { icon: '💄', text: '护肤前准备' },
       { icon: '🧑', text: '粗糙肌肤' }
+    ],
+    options: [
+      { key: 'chassis', name: '机箱样式', required: true, values: [
+        { id: 'c1', label: '标准铝合金', desc: '阳极氧化银灰', icon: '🔲' },
+        { id: 'c5', label: '香槟金', desc: '电镀香槟金', icon: '🥂' }
+      ]},
+      { key: 'handle', name: '手柄样式', required: true, values: [
+        { id: 'h1', label: '直柄经典', desc: '直握人体工学', icon: '🖊️' },
+        { id: 'h2', label: '弯柄贴面', desc: '弧形贴合面部', icon: '🪝' }
+      ]},
+      { key: 'bracket', name: '支架样式', required: false, values: [
+        { id: 'b0', label: '不需要', desc: '仅主机', icon: '🚫' },
+        { id: 'b4', label: '无线充电底座', desc: '感应充电立座', icon: '🔌' }
+      ]}
     ]
   }
 ];
