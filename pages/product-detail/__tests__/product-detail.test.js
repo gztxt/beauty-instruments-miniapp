@@ -59,10 +59,11 @@ describe('pages/product-detail - 选配交互', () => {
     expect(pageObj.data.options.map(o => o.key)).toEqual(['chassis', 'handle', 'bracket']);
   });
 
-  test('onLoad 无选配的产品(id=8) options 为空', () => {
+  test('onLoad 皮肤检测类产品(id=8) 也写入 3 个选配维度', () => {
     pageObj.onLoad.call(pageObj, { id: '8' });
     expect(pageObj.data.product.id).toBe(8);
-    expect(pageObj.data.options).toEqual([]);
+    expect(pageObj.data.options.length).toBe(3);
+    expect(pageObj.data.options.map(o => o.key)).toEqual(['chassis', 'handle', 'bracket']);
   });
 
   test('onLoad 未找到产品 走 toast 分支', () => {

@@ -40,9 +40,8 @@ describe('可定制标签 - 数据不变量', () => {
 
   test('getProductsByCategory 返回对象保留 options 字段（卡片可读）', () => {
     const all = getProductsByCategory(0);
-    const withOpt = all.filter((p) => OPTION_PRODUCT_IDS.includes(p.id));
-    expect(withOpt.length).toBe(OPTION_PRODUCT_IDS.length);
-    withOpt.forEach((p) => {
+    expect(all.length).toBeGreaterThan(0);
+    all.forEach((p) => {
       expect(Array.isArray(p.options)).toBe(true);
       expect(p.options.length).toBeGreaterThan(0);
     });
