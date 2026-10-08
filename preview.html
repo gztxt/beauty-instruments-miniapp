@@ -462,11 +462,33 @@ img { max-width: 100%; }
 
 /* 产品详情 */
 .detail-page { min-height: 60vh; }
+/* 详情页顶部产品图轮播（2026-10-08：高度 200→160 对齐其它三页；改多视角帧轮播） */
 .detail-hero {
-  height: 200px; margin: 0 16px; border-radius: 16px; overflow: hidden;
+  height: 160px; margin: 0 16px; border-radius: 16px; overflow: hidden;
   background: linear-gradient(135deg, #1e3a0e, #2d5016 50%, #3a6b1e);
-  position: relative; display: flex; align-items: center; justify-content: center;
+  position: relative;
 }
+.detail-hero-track {
+  display: flex; height: 100%;
+  transition: transform 0.5s ease; will-change: transform; touch-action: pan-y;
+}
+.detail-hero-track.no-anim { transition: none; }
+.detail-hero-slide {
+  min-width: 100%; height: 100%; position: relative; overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+}
+/* 各帧配色：同一产品的不同视角，替代真实产品图（真图到位后改 background-image 即可） */
+.dh-0 { background: linear-gradient(135deg, #1e3a0e, #2d5016 50%, #3a6b1e); }
+.dh-1 { background: linear-gradient(135deg, #2d5016, #4a7a2e 55%, #6a9f4a); }
+.dh-2 { background: linear-gradient(135deg, #3a6b1e, #6a9f4a 50%, #c9a84c); }
+.dh-3 { background: linear-gradient(135deg, #1e3a0e, #3a6b1e 50%, #c9a84c); }
+/* 真图预留：data 里若给 products 补 img 字段，去掉上面的渐变即可直接用 */
+.detail-hero-slide.has-img { background-size: cover; background-position: center; }
+.detail-hero-dots {
+  position: absolute; bottom: 6px; left: 50%; transform: translateX(-50%);
+  z-index: 10; display: flex; align-items: center; gap: 5px;
+}
+/* 圆点沿用全局 .swiper-dot 尺寸（8px），此处仅定位；active 态由全局规则着色 */
 .detail-hero-deco { position: absolute; inset: 0; pointer-events: none; }
 .detail-hero-deco .c1 {
   position: absolute; width: 140px; height: 140px; border-radius: 50%;
@@ -477,24 +499,32 @@ img { max-width: 100%; }
   border: 1px solid rgba(201,168,76,0.15); bottom: -20px; left: -20px;
 }
 .detail-hero-content { position: relative; z-index: 2; text-align: center; color: #fff; padding: 0 16px; }
+/* 产品图位：无真实产品图时用渐变胶囊占位。
+   不重复显示产品名（下方 .detail-hero-name 已有），只作图形占位，
+   宽度固定避免长名撑破布局（2026-10-08 实测「多功能美容仪」曾折行）。 */
 .detail-hero-icon {
-  width: 72px; height: 72px; border-radius: 50%; margin: 0 auto 12px;
-  background: rgba(255,255,255,0.12); display: flex; align-items: center; justify-content: center;
-  font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.9);
+  display: block; width: 56px; height: 8px; border-radius: 4px; margin: 0 auto 8px;
+  background: rgba(255,255,255,0.16);
 }
-.detail-hero-name { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
-.detail-hero-model { font-size: 13px; color: var(--accent); letter-spacing: 1px; }
+.detail-hero-name { font-size: 20px; font-weight: 700; margin-bottom: 3px; }
+.detail-hero-model { font-size: 12px; color: var(--accent); letter-spacing: 1px; }
+/* 视角标签置于名称上方，不与底部轮播圆点抢空间
+   （2026-10-08 实测：置于下方时标签底176 > 圆点顶174，二者重叠） */
+.detail-hero-view {
+  display: inline-block; margin-bottom: 6px; padding: 2px 10px; border-radius: 10px;
+  background: rgba(255,255,255,0.14); font-size: 11px; color: rgba(255,255,255,0.9);
+}
 
 .params-card .param-item {
   display: flex; justify-content: space-between; gap: 12px;
-  padding: 10px 0; border-bottom: 1px solid #f5f5f5; font-size: 13px;
+  padding: 7px 0; border-bottom: 1px solid #f5f5f5; font-size: 13px;
 }
 .params-card .param-item:last-child { border-bottom: none; }
 .param-label { color: var(--text-light); flex-shrink: 0; }
 .param-value { color: var(--text); font-weight: 500; text-align: right; }
 
 .feature-item {
-  display: flex; gap: 12px; padding: 12px 0;
+  display: flex; gap: 12px; padding: 9px 0;
   border-bottom: 1px solid #f5f5f5; align-items: flex-start;
 }
 .feature-item:last-child { border-bottom: none; }
@@ -514,7 +544,7 @@ img { max-width: 100%; }
 .scene-icon { font-size: 18px; }
 
 /* 选配 */
-.opt-group { margin-bottom: 16px; }
+.opt-group { margin-bottom: 10px; }
 .opt-group:last-child { margin-bottom: 0; }
 .opt-group-title {
   font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 8px;
@@ -524,10 +554,10 @@ img { max-width: 100%; }
   font-size: 10px; color: #c0392b; background: rgba(192,57,43,0.08);
   padding: 1px 6px; border-radius: 4px; font-weight: 500;
 }
-.opt-values { display: flex; flex-wrap: wrap; gap: 8px; }
+.opt-values { display: flex; flex-wrap: wrap; gap: 6px; }
 .opt-chip {
-  border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px;
-  cursor: pointer; background: #fff; min-width: 96px; transition: all 0.2s;
+  border: 1px solid var(--border); border-radius: 8px; padding: 6px 8px;
+  cursor: pointer; background: #fff; min-width: 92px; transition: all 0.2s;
   text-align: left; font-family: inherit;
 }
 .opt-chip:hover { border-color: var(--primary-light); }
@@ -550,10 +580,17 @@ img { max-width: 100%; }
   border-top: 1px solid rgba(0,0,0,0.06); z-index: 90;
   box-sizing: border-box;
 }
-/* 详情页：咨询条 fixed 在 Tab 上方，额外为咨询条高度留白（Tab 占位由 #app / spacer 负责） */
+/* 详情页：咨询条fixed 在 Tab 上方，额外为咨询条高度留白（Tab 占位由 #app / spacer 负责） */
 .detail-page.page-pad-bottom {
   padding-bottom: calc(72px + 12px);
 }
+/* ===== 详情页排版紧凑化（2026-10-08）=====
+   作用域严格限定 .detail-page，只压缩详情页，不影响首页/产品中心/关于我们。
+   起因：详情页 scrollHeight 达 1778px，用户反馈页面过长。 */
+.detail-page .section { margin-top: 10px; }
+.detail-page .section-title { font-size: 16px; margin-bottom: 4px; }
+.detail-page .card { padding: 12px; }
+.detail-page .scene-item { padding: 9px; }
 .detail-bar .btn-outline {
   flex: 1; padding: 12px; border: 1px solid var(--primary); border-radius: 24px;
   background: #fff; color: var(--primary); font-size: 14px; font-weight: 600; cursor: pointer;
@@ -566,7 +603,7 @@ img { max-width: 100%; }
 
 .back-bar {
   display: flex; align-items: center; gap: 8px;
-  padding: 12px 16px 8px; font-size: 14px; color: var(--primary);
+  padding: 8px 16px 4px; font-size: 14px; color: var(--primary);
   cursor: pointer; font-weight: 600; background: none; border: none; width: 100%; text-align: left;
 }
 .back-bar:active { opacity: 0.7; }
@@ -989,6 +1026,25 @@ function renderAbout() {
   `;
 }
 
+/**
+ * 详情页顶部轮播帧数据（2026-10-08）
+ * 项目暂无真实产品图（images/ 仅图标），故按「同一产品多视角」生成 4 帧：
+ * 正面 / 侧面 / 细节 / 包装。若将来在 data/products.js 补img 字段（字符串或数组），
+ * 此函数会优先使用真图，无需改渲染逻辑。
+ */
+function detailHeroFrames(p) {
+  if (!p) return [];
+  const views = ['正面', '侧面', '细节', '整机'];
+  // 真图优先：img 支持数组（多图轮播）或单张字符串
+  if (Array.isArray(p.img) && p.img.length) {
+    return p.img.map((src, i) => ({ img: src, view: views[i % views.length] }));
+  }
+  if (typeof p.img === 'string' && p.img) {
+    return [{ img: p.img, view: views[0] }];
+  }
+  return views.map(v => ({ img: '', view: v }));
+}
+
 function renderDetail() {
   const p = findProduct(detailId);
   if (!p) {
@@ -1015,12 +1071,22 @@ function renderDetail() {
     <div class="detail-page page-pad-bottom">
       <button type="button" class="back-bar" onclick="closeDetail()">← 返回列表</button>
 
-      <div class="detail-hero">
-        <div class="detail-hero-deco"><div class="c1"></div><div class="c2"></div></div>
-        <div class="detail-hero-content">
-          <div class="detail-hero-icon">${escapeHtml(p.imgText || p.name)}</div>
-          <div class="detail-hero-name">${escapeHtml(p.name)}</div>
-          <div class="detail-hero-model">${escapeHtml(p.model)}</div>
+      <div class="detail-hero" id="detail-hero">
+        <div class="detail-hero-track" id="hero-track">
+          ${detailHeroFrames(p).map((f, i) => `
+            <div class="detail-hero-slide dh-${i % 4}${f.img ? ' has-img' : ''}"${f.img ? ` style="background-image:url('${escapeHtml(f.img)}')"` : ''}>
+              <div class="detail-hero-deco"><div class="c1"></div><div class="c2"></div></div>
+              <div class="detail-hero-content">
+                <div class="detail-hero-view">${escapeHtml(f.view)}</div>
+                <div class="detail-hero-icon" aria-hidden="true"></div>
+                <div class="detail-hero-name">${escapeHtml(p.name)}</div>
+                <div class="detail-hero-model">${escapeHtml(p.model)}</div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+        <div class="detail-hero-dots" id="hero-dots">
+          ${detailHeroFrames(p).map((_, i) => `<div class="swiper-dot${i === 0 ? ' active' : ''}" data-idx="${i}"></div>`).join('')}
         </div>
       </div>
 
@@ -1244,6 +1310,10 @@ function render() {
   const app = document.getElementById('app');
   if (detailId != null) {
     app.innerHTML = renderDetail();
+    // 详情页顶部产品图轮播：复用同一套 startSwiper/applySwiper（只换容器与帧数）
+    const dp = findProduct(detailId);
+    const frames = detailHeroFrames(dp);
+    if (dp && frames.length > 1) startSwiper('hero-track', 'hero-dots', frames.length);
     return;
   }
   const pages = [renderHome, renderProducts, renderAbout];

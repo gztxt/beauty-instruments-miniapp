@@ -40,6 +40,8 @@ beauty-instruments-miniapp/
 1. 在 `project.config.json` 中修改 `appid` 为你的微信小程序 AppID
 2. 在 `app.js` 的 `globalData.companyInfo` 中填写真实公司信息
 3. 将 `images/` 下产品占位图替换为真实产品图片
+   （当前无真实产品图：列表/首页用渐变 + 产品名占位，详情页顶部用 4 组渐变轮换多视角。
+    在 `data/products.js` 给产品补 `img` 字段即可让详情页顶部直接显示真图）
 4. 如需真机预览，请在微信开发者工具中导入项目
 
 ## 设计规范
@@ -108,5 +110,31 @@ beauty-instruments-miniapp/
   而关于我们用 `.page-banner` 为 160px，三页顶部不齐。按「以关于我们页为准」将前者两处改为 160px。
   验证：320/360/390/414/768/1024/1440/1920 八档宽度下三页顶部均为 160px，`scrollWidth == clientWidth` 无横向溢出；
   轮播内容实测高 91px（35→126）完整落在 160px 内不裁切；圆点（140–148px）与金线（124–126px）不重叠。
-  未改动 `preview.html:466` 的 `.detail-hero`（详情页 hero，用户未点名）。
+
+### 产品详情页改版
+
+- **顶部产品图轮播，高 160px** — `.detail-hero` 由 200px 改 160px，与其它三页顶部对齐。
+  改为 4 帧轮播（正面/侧面/细节/整机），复用首页/产品中心同一套
+  `startSwiper/applySwiper`（仅换容器与帧数），**不新增轮播逻辑**。
+  > ⚠️ 项目暂无真实产品图（`images/` 仅 tabBar 与联系页图标）。
+  > 现用 4 组渐变（`.dh-0`~`.dh-3`）代替多视角图。
+  > **真图预留**：在 `data/products.js` 给产品补 `img` 字段（字符串或数组），
+  > `detailHeroFrames()` 会自动优先使用，渲染逻辑无需改动。
+- **排版紧凑化，页面变短** — 用户反馈详情页过长（scrollHeight 1778px）。
+  压缩后 **1547px（-231px，-13%）**。作用域严格限定 `.detail-page`，不影响其它页：
+
+  | 部位 | 改前 | 改后 |
+  |---|---|---|
+  | `.section` margin-top | 16px | 10px |
+  | 详情页 `.section-title` | 18px | 16px |
+  | 详情页 `.card` padding | 16px | 12px |
+  | `.param-item` padding | 10px | 7px |
+  | `.opt-group` margin-bottom | 16px | 10px |
+  | `.opt-chip` padding / min-width | 8/10 · 96px | 6/8 · 92px |
+  | `.feature-item` padding | 12px | 9px |
+  | `.back-bar` padding | 12/8 | 8/4 |
+
+- **过程中修掉两处自查发现的缺陷**（均由量测/截图取证，非猜测）：
+  - 产品名「多功能美容仪」在圆形占位内**折成两行** → 改为不重复产品名的图形占位条；
+  - 视角标签置于名称下方时与底部圆点**重叠**（标签底 176 > 圆点顶 174）→ 移至名称上方，重叠消除。
 
