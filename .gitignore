@@ -20,6 +20,8 @@ ehthumbs.db
 runs/
 .pipeline_cache/
 *.bak.*
+# 工作区军规命名的备份：<原名>.bak-YYYYmmdd_HHMMSS-说明（连字符，非 .bak. 点号）
+*.bak-*
 
 # Python cache
 __pycache__/
